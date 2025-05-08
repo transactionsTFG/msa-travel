@@ -18,7 +18,7 @@ import msa.commons.event.EventId;
 
 public abstract class BaseJMSEventPublisher implements IEventPublisher {
     private ConnectionFactory connectionFactory;
-    private Gson gson;
+    protected Gson gson;
     protected Queue queue;
     private static final Logger LOGGER = LogManager.getLogger(BaseJMSEventPublisher.class);
 
