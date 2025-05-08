@@ -32,9 +32,4 @@ public class BeginCreateAirlineReservationEvent extends BaseEventHandler {
         return EventId.RESERVATION_AIRLINE_CREATE_RESERVATION_BEGIN_SAGA;
     }
 
-    @Override
-    public void handle(Object data) {
-        LOGGER.info("METODO SIN IMPLEMENTAR");
-    }
-
 }

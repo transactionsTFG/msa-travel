@@ -32,9 +32,4 @@ public class BeginCreateHotelBookingEvent extends BaseEventHandler {
         return EventId.BEGIN_CREATE_HOTEL_BOOKING;
     }
 
-    @Override
-    public void handle(Object data) {
-        LOGGER.info("METODO SIN IMPLEMENTAR");
-    }
-
 }

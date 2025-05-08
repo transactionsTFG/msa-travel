@@ -31,7 +31,7 @@ public abstract class BaseJMSEventPublisher implements IEventPublisher {
             LOGGER.info("Publicando en Cola {}, Evento Id: {}, Mensaje: {}", this.getQueueName(), eventId, data);
             jmsContext.createProducer().send(this.queue, txt);
         } catch (Exception e) {
-            LOGGER.error("Error al publiar el mensaje: {}", e.getMessage());
+            LOGGER.error("Error al publicar el mensaje: {}", e.getMessage());
         }
     }
 
