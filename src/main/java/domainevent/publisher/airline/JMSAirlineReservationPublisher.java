@@ -34,8 +34,8 @@ public class JMSAirlineReservationPublisher extends BaseJMSEventPublisher {
     private static final Logger LOGGER = LogManager.getLogger(JMSAirlineReservationPublisher.class);
     private static final String JNDI_FACTORY = "weblogic.jndi.WLInitialContextFactory";
     private static final String PROVIDER_URL = "t3://127.0.0.1:8001";
-    private static final String CONNECTION_FACTORY_JNDI = "jms/airlineConnectionFactory";
-    private static final String QUEUE_JNDI = "jms/reservationQueue";
+    private static final String CONNECTION_FACTORY_JNDI = "jms/remoteAirlineConnectionFactory";
+    private static final String QUEUE_JNDI = "jms/remoteReservationQueue";
 
     @Override
     @Inject
@@ -56,7 +56,7 @@ public class JMSAirlineReservationPublisher extends BaseJMSEventPublisher {
             env.put(Context.INITIAL_CONTEXT_FACTORY, JNDI_FACTORY);
             env.put(Context.PROVIDER_URL, PROVIDER_URL);
             env.put(Context.SECURITY_PRINCIPAL, "root");
-            env.put(Context.SECURITY_CREDENTIALS, "password");
+            env.put(Context.SECURITY_CREDENTIALS, "password*");
 
             Context ctx = new InitialContext(env);
 

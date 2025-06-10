@@ -33,8 +33,8 @@ public class JMSHotelBookingPublisher extends BaseJMSEventPublisher {
     private static final Logger LOGGER = LogManager.getLogger(JMSHotelBookingPublisher.class);
     private static final String JNDI_FACTORY = "weblogic.jndi.WLInitialContextFactory";
     private static final String PROVIDER_URL = "t3://127.0.0.1:7001";
-    private static final String CONNECTION_FACTORY_JNDI = "jms/hotelConnectionFactory";
-    private static final String QUEUE_JNDI = "jms/hotelBookingQueue";
+    private static final String CONNECTION_FACTORY_JNDI = "jms/remoteHotelConnectionFactory";
+    private static final String QUEUE_JNDI = "jms/remoteHotelBookingQueue";
 
     @Override
     @Inject
@@ -55,7 +55,7 @@ public class JMSHotelBookingPublisher extends BaseJMSEventPublisher {
             env.put(Context.INITIAL_CONTEXT_FACTORY, JNDI_FACTORY);
             env.put(Context.PROVIDER_URL, PROVIDER_URL);
             env.put(Context.SECURITY_PRINCIPAL, "root");
-            env.put(Context.SECURITY_CREDENTIALS, "password");
+            env.put(Context.SECURITY_CREDENTIALS, "password*");
 
             Context ctx = new InitialContext(env);
 
