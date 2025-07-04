@@ -13,17 +13,16 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import business.dto.CreateAirlineAndHotelReservationDTO;
 import domainevent.registry.EventHandlerRegistry;
-import msa.commons.event.EventData;
-import msa.commons.event.EventId;
+import msa.commons.controller.agency.reservationairline.ReservationAirlineRequestDTO;
+import msa.commons.controller.airline.reservation.create.ReservationRequestDTO;
 
-@Path("/orchestrator")
+@Path("/travel")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class OrchestratorController {
+public class TravelController {
 
-    private static final Logger LOGGER = LogManager.getLogger(OrchestratorController.class);
+    private static final Logger LOGGER = LogManager.getLogger(TravelController.class);
     private EventHandlerRegistry eventHandlerRegistry;
 
     @EJB
@@ -32,14 +31,14 @@ public class OrchestratorController {
     }
 
     @POST
-    @Path("/create")
-    public Response createAirlineAndHotelReservation(CreateAirlineAndHotelReservationDTO dto) {
+    @Path("/reservation/airline")
+    public Response createAirlineAndHotelReservation(ReservationAirlineRequestDTO dto) {
         LOGGER.info("Iniciada reserva aerolinea y hotel: {}", dto);
-        EventData eventData = new EventData("", new ArrayList<>(), dto.getReservation());
-        this.eventHandlerRegistry.getHandler(EventId.RESERVATION_AIRLINE_CREATE_RESERVATION_BEGIN_SAGA)
-                .handle(eventData);
-        eventData.setData(dto.getBooking());
-        this.eventHandlerRegistry.getHandler(EventId.BEGIN_CREATE_HOTEL_BOOKING).handle(eventData);
+        
+        //EventData eventData = new EventData("", new ArrayList<>(), dto.getReservation());
+        //this.eventHandlerRegistry.getHandler(EventId.RESERVATION_AIRLINE_CREATE_RESERVATION_BEGIN_SAGA).handle(eventData);
+        //eventData.setData(dto.getBooking());
+        //this.eventHandlerRegistry.getHandler(EventId.BEGIN_CREATE_HOTEL_BOOKING).handle(eventData);
 
         return Response.status(Response.Status.OK).entity("Peticion recibida").build();
     }
