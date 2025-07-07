@@ -36,7 +36,7 @@ public class TravelController {
     }
 
     @Inject
-    public void setCreateTravelAirlineReservationUseCase(CreateTravelAirlineReservationUseCaseImpl createTravelAirlineReservationUseCase) {
+    public void setCreateTravelAirlineReservationUseCase(CreateTravelAirlineReservationUseCase createTravelAirlineReservationUseCase) {
         this.createTravelAirlineReservationUseCase = createTravelAirlineReservationUseCase;
     }
 
