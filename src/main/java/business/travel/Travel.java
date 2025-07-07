@@ -5,16 +5,17 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import msa.commons.saga.SagaPhases;
 
 @Entity
 @Getter
@@ -43,6 +44,11 @@ public class Travel {
     private boolean active;
     @Column(nullable = false) 
     private LocalDateTime dateCreation;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status_saga")
+    private SagaPhases statusSaga;
+    @Column(nullable = false, name = "saga_id")
+    private String sagaId;
     @Version
     private int version;
 
@@ -64,6 +70,8 @@ public class Travel {
         this.flightCost = dto.getFlightCost();
         this.hotelCost = dto.getHotelCost();
         this.active = dto.isActive();
+        this.statusSaga = dto.getSagaPhases();
+        this.sagaId = dto.getSagaId();
     }
 
     public TravelDTO toDTO(){
@@ -81,6 +89,8 @@ public class Travel {
             .flightCost(this.flightCost)
             .hotelCost(this.hotelCost)
             .active(this.active)
+            .sagaPhases(this.statusSaga)
+            .sagaId(this.sagaId)
             .build();
     }
 }

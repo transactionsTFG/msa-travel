@@ -1,11 +1,14 @@
 package business.travel;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import msa.commons.saga.SagaPhases;
 
 @Getter
 @Setter
@@ -26,4 +29,7 @@ public class TravelDTO {
     private double hotelCost;
     private boolean active;
     private LocalDateTime dateCreation;
+    private SagaPhases sagaPhases;
+    private String sagaId;
+
 }

@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import business.service.TravelService;
 import domainevent.publisher.IJMSCommandPublisher;
 
-public abstract class BaseHandler implements EventHandler {
+public abstract class BaseHandler implements CommandHandler {
     protected TravelService travelService;
     protected IJMSCommandPublisher jmsEventPublisher;
     protected Gson gson;
