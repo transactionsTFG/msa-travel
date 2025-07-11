@@ -11,7 +11,6 @@ import com.google.gson.Gson;
 import business.service.TravelService;
 import business.travel.TravelDTO;
 import domainevent.registry.EventHandlerRegistry;
-import msa.commons.commands.agency.reservationairline.AgencyReservationAirlineCommmad;
 import msa.commons.commands.createreservation.CreateReservationCommand;
 import msa.commons.commands.createreservation.model.CustomerInfo;
 import msa.commons.commands.createreservation.model.IdFlightInstanceInfo;
@@ -38,7 +37,6 @@ public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAi
         if (travelId <= 0) 
             return false;
         
-        AgencyReservationAirlineCommmad command = new AgencyReservationAirlineCommmad();
         CreateReservationCommand createReservationCommand = new CreateReservationCommand();
         List<IdFlightInstanceInfo> flightInstanceSeatsDTOs = new ArrayList<>();
         for (FlightInstanceSeatsDTO flightInstanceSeatsDTO : request.getListIdFlightInstanceSeats()) {
@@ -53,9 +51,8 @@ public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAi
         createReservationCommand.setFlightInstanceInfo(flightInstanceSeatsDTOs);
         createReservationCommand.setCustomerInfo(c);
         createReservationCommand.setIdReservation(-1);
-        command.setIdReservationTravel(travelId);
-        command.setCreateReservationCommand(createReservationCommand);
-        this.eventHandlerRegistry.getHandler(EventId.USER_AGENCY_VALIDATE_USER_BEGIN).handleCommand(this.gson.toJson(command));
+        createReservationCommand.setIdReservationTravel(travelId);
+        this.eventHandlerRegistry.getHandler(EventId.USER_AGENCY_VALIDATE_USER_BEGIN).handleCommand(this.gson.toJson(createReservationCommand));
         return true;
     }
     

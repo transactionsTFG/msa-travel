@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import business.usecase.createtravelreservationairline.CreateTravelAirlineReservationUseCase;
-import business.usecase.createtravelreservationairline.CreateTravelAirlineReservationUseCaseImpl;
 import msa.commons.controller.agency.reservationairline.ReservationAirlineRequestDTO;
 
 @Path("/travel")
