@@ -30,4 +30,22 @@ public class TravelServiceImpl implements TravelService {
         Travel t = this.entityManager.find(Travel.class, id, LockModeType.OPTIMISTIC);
         return t.toDTO();
     }
+
+    @Override
+    public TravelDTO updateTravel(TravelDTO travelDTO) {
+        Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
+        if (t == null) 
+            return null;
+        
+        t.setFlightReservationID(travelDTO.getFlightReservationID());
+        t.setFlightCost(travelDTO.getFlightCost());
+        t.setStatusSaga(travelDTO.getSagaPhases());
+        t.setActive(travelDTO.isActive());
+        t.setStatus(travelDTO.getStatus());
+        t.setCost(travelDTO.getFlightCost() + travelDTO.getHotelCost());
+        t.setHotelReservationID(travelDTO.getHotelReservationID());
+        t.setPassengerCounter(travelDTO.getPassengerCounter());
+        this.entityManager.merge(t);
+        return t.toDTO();
+    }
 }

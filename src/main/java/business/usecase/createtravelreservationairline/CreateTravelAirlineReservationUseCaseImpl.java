@@ -1,7 +1,10 @@
 package business.usecase.createtravelreservationairline;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -16,11 +19,14 @@ import msa.commons.commands.createreservation.model.CustomerInfo;
 import msa.commons.commands.createreservation.model.IdFlightInstanceInfo;
 import msa.commons.controller.agency.reservationairline.ReservationAirlineRequestDTO;
 import msa.commons.controller.airline.reservation.create.FlightInstanceSeatsDTO;
+import msa.commons.event.EventData;
 import msa.commons.event.EventId;
+import msa.commons.event.eventoperation.user.UserValidate;
 import msa.commons.saga.SagaPhases;
 
+
 @Stateless
-public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAirlineReservationUseCase{
+public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAirlineReservationUseCase {
     private EventHandlerRegistry eventHandlerRegistry;
     private TravelService travelService;
     private Gson gson;
@@ -28,31 +34,46 @@ public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAi
     public boolean createTravelAirlineReservation(ReservationAirlineRequestDTO request) {
         if (request == null) 
             return false;
-        
-        TravelDTO travelDTO = new TravelDTO();
-        travelDTO.setActive(false);
-        travelDTO.setId(-1);
-        travelDTO.setSagaPhases(SagaPhases.STARTED);
-        long travelId = this.travelService.createTravel(travelDTO);
-        if (travelId <= 0) 
-            return false;
-        
-        CreateReservationCommand createReservationCommand = new CreateReservationCommand();
-        List<IdFlightInstanceInfo> flightInstanceSeatsDTOs = new ArrayList<>();
+
+        Map<Long, Integer> flightInstanceSeats = new HashMap<>();
         for (FlightInstanceSeatsDTO flightInstanceSeatsDTO : request.getListIdFlightInstanceSeats()) {
-            IdFlightInstanceInfo f = new IdFlightInstanceInfo();
-            f.setIdFlightInstance(flightInstanceSeatsDTO.getIdFlightInstance());
-            f.setNumberSeats(flightInstanceSeatsDTO.getNumberSeats());
-            flightInstanceSeatsDTOs.add(f);
+            if (flightInstanceSeatsDTO == null || flightInstanceSeatsDTO.getIdFlightInstance() <= 0 || flightInstanceSeatsDTO.getNumberSeats() <= 0) 
+                return false;
+            
+            if (flightInstanceSeats.containsKey(flightInstanceSeatsDTO.getIdFlightInstance())) 
+                flightInstanceSeats.put(flightInstanceSeatsDTO.getIdFlightInstance(), flightInstanceSeats.get(flightInstanceSeatsDTO.getIdFlightInstance()) + flightInstanceSeatsDTO.getNumberSeats());
+            else 
+                flightInstanceSeats.put(flightInstanceSeatsDTO.getIdFlightInstance(), flightInstanceSeatsDTO.getNumberSeats());
+        
         }
+        final String sagaId = UUID.randomUUID().toString();
+        CreateReservationCommand createReservationCommand = new CreateReservationCommand();
+        List<IdFlightInstanceInfo> listFlights = new ArrayList<>();
+        for (Map.Entry<Long, Integer> entry : flightInstanceSeats.entrySet()) {
+            Long idFlightInstance = entry.getKey();
+            Integer numberSeats = entry.getValue();
+            TravelDTO travelDTO = new TravelDTO();
+            travelDTO.setActive(false);
+            travelDTO.setId(-1);
+            travelDTO.setSagaId(sagaId);
+            travelDTO.setSagaPhases(SagaPhases.STARTED);
+            long travelId = this.travelService.createTravel(travelDTO);          
+            IdFlightInstanceInfo flightInstanceInfo = new IdFlightInstanceInfo();
+            flightInstanceInfo.setIdFlightInstance(idFlightInstance);
+            flightInstanceInfo.setIdReservationTravel(travelId);
+            flightInstanceInfo.setNumberSeats(numberSeats);
+            listFlights.add(flightInstanceInfo);
+        }
+        
         CustomerInfo c = new CustomerInfo();
         c.setDni(request.getDni());
         createReservationCommand.setAllFlightBuy(false);
-        createReservationCommand.setFlightInstanceInfo(flightInstanceSeatsDTOs);
+        createReservationCommand.setFlightInstanceInfo(listFlights);
         createReservationCommand.setCustomerInfo(c);
         createReservationCommand.setIdReservation(-1);
-        createReservationCommand.setIdReservationTravel(travelId);
-        this.eventHandlerRegistry.getHandler(EventId.USER_AGENCY_VALIDATE_USER_BEGIN).handleCommand(this.gson.toJson(createReservationCommand));
+        createReservationCommand.setIdUser(request.getIdCustomer());
+        EventData eventData = new EventData(sagaId, UserValidate.CREATE_RESERVATION_AIRLINE, new ArrayList<>(), createReservationCommand);
+        this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventData));
         return true;
     }
     

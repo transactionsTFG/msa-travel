@@ -8,7 +8,8 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
 
-import business.qualifier.ValidateUserAirlineReservationTravelQualifier;
+import business.qualifier.CreateReservationTravelQualifier;
+import business.qualifier.ValidateUserReservationTravelQualifier;
 import domainevent.command.handler.CommandHandler;
 import msa.commons.event.EventId;
 
@@ -16,11 +17,13 @@ import msa.commons.event.EventId;
 @Startup
 public class EventHandlerRegistry {
     private Map<EventId, CommandHandler> handlers = new EnumMap<>(EventId.class);
-    private CommandHandler validateUserAirlineReservationTravel;
+    private CommandHandler validateUserReservationTravel;
+    private CommandHandler createReservationTravel;
 
     @PostConstruct
     public void init() {
-        this.handlers.put(EventId.USER_AGENCY_VALIDATE_USER_BEGIN, this.validateUserAirlineReservationTravel);
+        this.handlers.put(EventId.VALIDATE_USER, this.validateUserReservationTravel);
+        this.handlers.put(EventId.CREATE_RESERVATION_TRAVEL, this.createReservationTravel);
     }
 
     public CommandHandler getHandler(EventId eventId) {
@@ -28,8 +31,14 @@ public class EventHandlerRegistry {
     }
 
     @Inject
-    public void setValidateUserAirlineReservationTravel(@ValidateUserAirlineReservationTravelQualifier CommandHandler validateUserAirlineReservationTravel) {
-        this.validateUserAirlineReservationTravel = validateUserAirlineReservationTravel;
+    public void setValidateUserReservationTravel(@ValidateUserReservationTravelQualifier CommandHandler validateUserAirlineReservationTravel) {
+        this.validateUserReservationTravel = validateUserAirlineReservationTravel;
     }
+
+    @Inject
+    public void setCreateReservationTravel(@CreateReservationTravelQualifier CommandHandler createReservationTravel) {
+        this.createReservationTravel = createReservationTravel;
+    }
+
 
 }
