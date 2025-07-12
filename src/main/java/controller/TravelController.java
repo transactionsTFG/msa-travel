@@ -1,5 +1,6 @@
 package controller;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -34,7 +35,7 @@ public class TravelController {
         return Response.status(Response.Status.OK).entity("Peticion recibida").build();
     }
 
-    @Inject
+    @EJB
     public void setCreateTravelAirlineReservationUseCase(CreateTravelAirlineReservationUseCase createTravelAirlineReservationUseCase) {
         this.createTravelAirlineReservationUseCase = createTravelAirlineReservationUseCase;
     }

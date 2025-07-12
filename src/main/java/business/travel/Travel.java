@@ -27,9 +27,7 @@ public class Travel {
 	private long id;
 	@Column(nullable = false)
 	private Long userId;
-    @Column(nullable = false)
 	private String date;
-    @Column(nullable = false)
 	private String returnDate;
     @Column(nullable = false)
 	private int passengerCounter;
@@ -55,6 +53,7 @@ public class Travel {
     @PrePersist
     public void prePersist() {
         this.dateCreation = LocalDateTime.now();
+        this.status = "PENDING";
     }
     
     public Travel(TravelDTO dto){
