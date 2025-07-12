@@ -8,7 +8,7 @@
         <jta-data-source>jdbc/msa-travel</jta-data-source>
         <properties>
             <property name="javax.persistence.jtaDataSource" value="jdbc/msa-travel" />
-            <property name="javax.persistence.schema-generation.database.action" value="create" />
+            <property name="javax.persistence.schema-generation.database.action" value="create-or-extend-tables" />
         </properties>
     </persistence-unit>
 </persistence>
