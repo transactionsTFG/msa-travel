@@ -71,7 +71,7 @@ public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAi
         createReservationCommand.setFlightInstanceInfo(listFlights);
         createReservationCommand.setCustomerInfo(c);
         createReservationCommand.setIdReservation(-1);
-        createReservationCommand.setIdUser(request.getIdCustomer());
+        createReservationCommand.setIdUser(request.getIdUser());
         EventData eventData = new EventData(sagaId, UserValidate.CREATE_RESERVATION_AIRLINE, new ArrayList<>(), createReservationCommand);
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventData));
         return true;
