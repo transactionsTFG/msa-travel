@@ -37,6 +37,7 @@ public class TravelServiceImpl implements TravelService {
         if (t == null) 
             return null;
         
+        t.setUserId(travelDTO.getUserId());
         t.setFlightReservationID(travelDTO.getFlightReservationID());
         t.setFlightCost(travelDTO.getFlightCost());
         t.setStatusSaga(travelDTO.getSagaPhases());

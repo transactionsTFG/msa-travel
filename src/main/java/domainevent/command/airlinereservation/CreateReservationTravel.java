@@ -26,12 +26,13 @@ public class CreateReservationTravel extends BaseHandler {
     public void handleCommand(String json) {
         EventData e = this.gson.fromJson(json, EventData.class);
         if (ReservationAirline.CREATE_RESERVATION_ONLY_AIRLINE_COMMIT.name().equals(e.getOperation().getOperation())) 
-            handleCreateReservationAirlineCommit(e);
+            handleCreateReservationAirlineCommit(json);
         if (ReservationAirline.CREATE_RESERVATION_ONLY_AIRLINE_ROLLBACK.name().equals(e.getOperation().getOperation())) 
-            handleCreateReservationAirlineRollback(e);
+            handleCreateReservationAirlineRollback(json);
     }
 
-    private void handleCreateReservationAirlineCommit(final EventData e) {
+    private void handleCreateReservationAirlineCommit(final String json) {
+        EventData e = EventData.fromJson(json, CreateReservationCommand.class);
         CreateReservationCommand c = (CreateReservationCommand) e.getData();
         LOGGER.info("Commit Create Reservation only Arline: {}", e.getSagaId());
         c.getFlightInstanceInfo().forEach(f -> {
@@ -40,6 +41,7 @@ public class CreateReservationTravel extends BaseHandler {
                 LOGGER.error("Travel not found for id: {}", f.getIdReservationTravel());
                 return;
             }
+            travelDTO.setUserId(c.getIdUser());
             travelDTO.setFlightCost(f.getPrice() * f.getNumberSeats());
             travelDTO.setFlightReservationID(f.getIdFlightInstance());
             travelDTO.setSagaPhases(SagaPhases.COMPLETED);
@@ -50,7 +52,8 @@ public class CreateReservationTravel extends BaseHandler {
         });
     }
 
-    private void handleCreateReservationAirlineRollback(final EventData e) {
+    private void handleCreateReservationAirlineRollback(final String json) {
+        EventData e = EventData.fromJson(json, CreateReservationCommand.class);
         CreateReservationCommand c = (CreateReservationCommand) e.getData();
         LOGGER.info("Rollback Create Reservation only Arline: {}", e.getSagaId());
         c.getFlightInstanceInfo().forEach(f -> {
@@ -61,8 +64,8 @@ public class CreateReservationTravel extends BaseHandler {
             }
             travelDTO.setFlightCost(f.getPrice() * f.getNumberSeats());
             travelDTO.setFlightReservationID(f.getIdFlightInstance());
-            travelDTO.setSagaPhases(SagaPhases.COMPLETED);
-            travelDTO.setActive(true);
+            travelDTO.setSagaPhases(SagaPhases.CANCELLED);
+            travelDTO.setActive(false);
             travelDTO.setStatus("CANCELADO");
             travelDTO.setPassengerCounter(f.getNumberSeats());
             this.travelService.updateTravel(travelDTO);
