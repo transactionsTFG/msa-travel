@@ -1,4 +1,4 @@
-package domainevent.command.airlinereservation;
+package domainevent.command.reservation;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
