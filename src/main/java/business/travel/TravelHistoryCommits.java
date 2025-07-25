@@ -21,9 +21,9 @@ public class TravelHistoryCommits {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "travel_id")
     private Travel travel;
-    @Column(nullable = true, name = "json_command_hotel")
+    @Column(nullable = true, name = "json_command_hotel", length = 5000)
     private String jsonCommandHotel;
-    @Column(nullable = true, name = "json_command_airline")
+    @Column(nullable = true, name = "json_command_airline", length = 5000)
     private String jsonCommandAirline;
     @Column(nullable = false, name = "rollback_hotel")
     private boolean rollbackHotel;

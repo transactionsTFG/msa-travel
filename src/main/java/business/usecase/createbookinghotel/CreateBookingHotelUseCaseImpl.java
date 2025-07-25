@@ -50,11 +50,13 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
             repeatIds.add(roomInfo.getRoomId());
         }
 
+        final byte transActive = 1;
         TravelDTO travelDTO = new TravelDTO();
         travelDTO.setActive(false);
         travelDTO.setId(-1);
         travelDTO.setSagaId(sagaId);
         travelDTO.setSagaPhases(SagaPhases.STARTED);
+        travelDTO.setTransactionActive(transActive);
         long travelId = this.travelService.createTravel(travelDTO);
 
         EventData eventData = new EventData(sagaId,
@@ -74,7 +76,7 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
                         .customerInfo(customerInfo)
                         .travelUserId(-1L)
                         .build(),
-                1);
+                transActive);
         eventData.setOperation(UserValidate.CREATE_RESERVATION_HOTEL);
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventData));
         return true;

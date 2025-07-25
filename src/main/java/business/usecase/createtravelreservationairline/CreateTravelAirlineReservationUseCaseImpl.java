@@ -57,10 +57,12 @@ public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAi
             flightInstanceInfo.setNumberSeats(numberSeats);
             listFlights.add(flightInstanceInfo);
         }
+        final byte transActive = 1;
         TravelDTO travelDTO = new TravelDTO();
             travelDTO.setActive(false);
             travelDTO.setId(-1);
             travelDTO.setSagaId(sagaId);
+            travelDTO.setTransactionActive(transActive);
             travelDTO.setSagaPhases(SagaPhases.STARTED);
         long travelId = this.travelService.createTravel(travelDTO);          
         CustomerInfo c = new CustomerInfo();
@@ -71,7 +73,7 @@ public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAi
         createReservationCommand.setCustomerInfo(c);
         createReservationCommand.setIdReservation(-1);
         createReservationCommand.setIdUser(request.getIdUser());
-        EventData eventData = new EventData(sagaId, UserValidate.CREATE_RESERVATION_AIRLINE, new ArrayList<>(), createReservationCommand, 1);
+        EventData eventData = new EventData(sagaId, UserValidate.CREATE_RESERVATION_AIRLINE, new ArrayList<>(), createReservationCommand, transActive);
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventData));
         return true;
     }

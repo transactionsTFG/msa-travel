@@ -20,13 +20,14 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public long createTravel(TravelDTO travelDTO) {
         Travel t = new Travel(travelDTO);
-        entityManager.persist(t);
-        entityManager.flush();
         TravelHistoryCommits history = new TravelHistoryCommits();
         history.setTravel(t);
         history.setSagaId(t.getSagaId());
         history.setRollbackAirline(false);
         history.setRollbackHotel(false);
+        entityManager.persist(t);
+        entityManager.persist(history);
+        entityManager.flush();
         return t.getId(); 
     } 
     
