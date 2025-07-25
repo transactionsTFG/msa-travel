@@ -14,4 +14,6 @@ public class TravelHistoryDTO {
     private long travelId;
     private String jsonCommandHotel;
     private String jsonCommandAirline;
+    private boolean rollbackHotel;
+    private boolean rollbackAirline;
 }

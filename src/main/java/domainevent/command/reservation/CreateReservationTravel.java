@@ -21,7 +21,6 @@ import msa.commons.event.EventId;
 import msa.commons.event.eventoperation.reservation.CreateReservation;
 import msa.commons.event.type.Type;
 import msa.commons.saga.SagaPhases;
-import weblogic.wsee.security.wssp.SamlTokenAssertion;
 
 @Stateless
 @CreateReservationTravelQualifier
@@ -85,6 +84,9 @@ public class CreateReservationTravel extends BaseHandler {
         EventData e = EventData.fromJson(json, CreateReservationCommand.class);
         CreateReservationCommand c = (CreateReservationCommand) e.getData();
         LOGGER.info("Rollback Create Reservation Arline: {}", e.getSagaId());
+        TravelHistoryDTO travelHistoryDTO = this.travelService.getTravelHistoryBySagaId(e.getSagaId());
+        if (travelHistoryDTO.isRollbackAirline()) 
+            return;
         TravelDTO travelDTO = this.travelService.getTravelById(c.getIdTravelAgency());
         if (travelDTO == null) { // Lanzar Rollback de Hotel y en otro caso lanzar el de Aerolinea
             LOGGER.error("Travel not found for id: {}", c.getIdTravelAgency());
@@ -93,9 +95,10 @@ public class CreateReservationTravel extends BaseHandler {
                 CreateHotelBookingCommand hotelCommand = this.gson.fromJson(th.getJsonCommandHotel(), CreateHotelBookingCommand.class);
                 EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), hotelCommand);
                 hotelEvent.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
+                this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
                 this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
             }
-            this.travelService.updateTravelRollback(travelDTO);
+            this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
             this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
             return;
@@ -111,15 +114,16 @@ public class CreateReservationTravel extends BaseHandler {
                     CreateHotelBookingCommand hotelCommand = this.gson.fromJson(history.getJsonCommandHotel(), CreateHotelBookingCommand.class);
                     EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), hotelCommand);
                     hotelEvent.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
+                    this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
                     this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
                 });
 
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
-            this.travelService.updateTravelRollback(travelDTO);
+            this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
             this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
         } else {
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
-            this.travelService.updateTravelRollback(travelDTO);
+            this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
             this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
         }
     }
@@ -128,6 +132,10 @@ public class CreateReservationTravel extends BaseHandler {
         EventData e = EventData.fromJson(json, CreateHotelBookingCommand.class);
         CreateHotelBookingCommand c = (CreateHotelBookingCommand) e.getData();
         LOGGER.info("Rollback Create Reservation only Arline: {}", e.getSagaId());
+        TravelHistoryDTO travelHistoryDTO = this.travelService.getTravelHistoryBySagaId(c.getSagaId());
+        if (travelHistoryDTO.isRollbackHotel()) 
+            return;
+
         TravelDTO travelDTO = this.travelService.getTravelById(c.getIdTravelAgency());
         if (travelDTO == null) { // Lanzar Rollback de Hotel y en otro caso lanzar el de Aerolinea
             LOGGER.error("Travel not found for id: {}", c.getIdTravelAgency());
@@ -136,9 +144,10 @@ public class CreateReservationTravel extends BaseHandler {
                 CreateReservationCommand airlineCommand = this.gson.fromJson(th.getJsonCommandAirline(), CreateReservationCommand.class);
                 EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), airlineCommand);
                 hotelEvent.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
+                this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
                 this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
             }
-            this.travelService.updateTravelRollback(travelDTO);
+            this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
             this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
             return;
@@ -154,15 +163,16 @@ public class CreateReservationTravel extends BaseHandler {
                     CreateHotelBookingCommand airlineCommand = this.gson.fromJson(history.getJsonCommandHotel(), CreateHotelBookingCommand.class);
                     EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), airlineCommand);
                     hotelEvent.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
+                    this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
                     this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
                 });
 
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
-            this.travelService.updateTravelRollback(travelDTO);
+            this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
             this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
         } else {
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
-            this.travelService.updateTravelRollback(travelDTO);
+            this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
             this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
         }
     }

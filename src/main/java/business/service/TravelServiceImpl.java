@@ -25,6 +25,8 @@ public class TravelServiceImpl implements TravelService {
         TravelHistoryCommits history = new TravelHistoryCommits();
         history.setTravel(t);
         history.setSagaId(t.getSagaId());
+        history.setRollbackAirline(false);
+        history.setRollbackHotel(false);
         return t.getId(); 
     } 
     
@@ -71,10 +73,23 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public TravelDTO updateTravelRollback(TravelDTO travelDTO) {
+    public TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type) {
         Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
         if (t == null) 
             return null;
+        
+        TravelHistoryCommits history = this.entityManager.find(TravelHistoryCommits.class, travelDTO.getSagaId(), LockModeType.OPTIMISTIC);
+        
+        if (type == Type.HOTEL) {
+            history.setRollbackHotel(true);
+            t.setHotelReservationID(-1L);
+        }
+
+        if (type == Type.AIRLINE) {
+            history.setRollbackAirline(true);
+            t.setFlightReservationID(-1L);
+        }
+
         t.setTransactionActive(0);
         t.setStatus("CANCELADO");
         t.setStatusSaga(SagaPhases.CANCELLED);

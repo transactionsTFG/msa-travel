@@ -8,6 +8,6 @@ public interface TravelService {
     long createTravel(TravelDTO travelDTO);
     TravelDTO getTravelById(long id);
     TravelDTO updateTravelCommit(TravelDTO travelDTO, Type type, String jsonCommand);
-    TravelDTO updateTravelRollback(TravelDTO travelDTO);
+    TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type);
     TravelHistoryDTO getTravelHistoryBySagaId(String sagaId);
 }

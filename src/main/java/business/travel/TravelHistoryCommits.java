@@ -25,6 +25,10 @@ public class TravelHistoryCommits {
     private String jsonCommandHotel;
     @Column(nullable = true, name = "json_command_airline")
     private String jsonCommandAirline;
+    @Column(nullable = false, name = "rollback_hotel")
+    private boolean rollbackHotel;
+    @Column(nullable = false, name = "rollback_airline")
+    private boolean rollbackAirline;
     @Version
     private int version;
 
@@ -34,6 +38,8 @@ public class TravelHistoryCommits {
                 .travelId(this.travel.getId())
                 .jsonCommandHotel(this.jsonCommandHotel)
                 .jsonCommandAirline(this.jsonCommandAirline)
+                .rollbackHotel(this.rollbackHotel)
+                .rollbackAirline(this.rollbackAirline)
                 .build();
     }
 }
