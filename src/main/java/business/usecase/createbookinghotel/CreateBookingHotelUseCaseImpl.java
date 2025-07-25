@@ -39,27 +39,30 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
         customerInfo.setDni(dto.getCustomer().getDni());
         Set<String> repeatIds = new HashSet<>();
         for (RoomInfo roomInfo : dto.getRoomsInfo()) {
-            if (repeatIds.contains(roomInfo.getRoomId())) 
+            long id = 0;
+            try {  
+                id = Long.parseLong(roomInfo.getRoomId());
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("Invalid room ID: " + roomInfo.getRoomId());
+            }
+            if (roomInfo.getRoomId() == null || id <= 0 || repeatIds.contains(roomInfo.getRoomId())) 
                 throw new RuntimeException("Room ID " + roomInfo.getRoomId() + " is repeated in the request"); 
             repeatIds.add(roomInfo.getRoomId());
         }
 
-        for (RoomInfo roomInfo : dto.getRoomsInfo()) {
-            TravelDTO travelDTO = new TravelDTO();
-            travelDTO.setActive(false);
-            travelDTO.setId(-1);
-            travelDTO.setSagaId(sagaId);
-            travelDTO.setSagaPhases(SagaPhases.STARTED);
-            long travelId = this.travelService.createTravel(travelDTO);
-            if (travelId <= 0) 
-                throw new RuntimeException("Failed to create booking for Room ID " + roomInfo.getRoomId());
-            roomInfo.setTravelId(travelId);
-        }
+        TravelDTO travelDTO = new TravelDTO();
+        travelDTO.setActive(false);
+        travelDTO.setId(-1);
+        travelDTO.setSagaId(sagaId);
+        travelDTO.setSagaPhases(SagaPhases.STARTED);
+        long travelId = this.travelService.createTravel(travelDTO);
 
-
-        EventData eventData = new EventData(sagaId, Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
+        EventData eventData = new EventData(sagaId,
+                UserValidate.CREATE_RESERVATION_AIRLINE,
+                Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
                 CreateHotelBookingCommand.builder()
                         .sagaId(sagaId)
+                        .idTravelAgency(travelId)
                         .userId(Long.parseLong(dto.getUserId()))
                         .startDate(dto.getStartDate())
                         .endDate(dto.getEndDate())
@@ -70,7 +73,8 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
                         .roomsInfo(dto.getRoomsInfo())
                         .customerInfo(customerInfo)
                         .travelUserId(-1L)
-                        .build());
+                        .build(),
+                1);
         eventData.setOperation(UserValidate.CREATE_RESERVATION_HOTEL);
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventData));
         return true;

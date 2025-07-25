@@ -52,27 +52,26 @@ public class CreateTravelAirlineReservationUseCaseImpl implements CreateTravelAi
         for (Map.Entry<Long, Integer> entry : flightInstanceSeats.entrySet()) {
             Long idFlightInstance = entry.getKey();
             Integer numberSeats = entry.getValue();
-            TravelDTO travelDTO = new TravelDTO();
+            IdFlightInstanceInfo flightInstanceInfo = new IdFlightInstanceInfo();
+            flightInstanceInfo.setIdFlightInstance(idFlightInstance);
+            flightInstanceInfo.setNumberSeats(numberSeats);
+            listFlights.add(flightInstanceInfo);
+        }
+        TravelDTO travelDTO = new TravelDTO();
             travelDTO.setActive(false);
             travelDTO.setId(-1);
             travelDTO.setSagaId(sagaId);
             travelDTO.setSagaPhases(SagaPhases.STARTED);
-            long travelId = this.travelService.createTravel(travelDTO);          
-            IdFlightInstanceInfo flightInstanceInfo = new IdFlightInstanceInfo();
-            flightInstanceInfo.setIdFlightInstance(idFlightInstance);
-            flightInstanceInfo.setIdReservationTravel(travelId);
-            flightInstanceInfo.setNumberSeats(numberSeats);
-            listFlights.add(flightInstanceInfo);
-        }
-        
+        long travelId = this.travelService.createTravel(travelDTO);          
         CustomerInfo c = new CustomerInfo();
         c.setDni(request.getDni());
+        createReservationCommand.setIdTravelAgency(travelId);
         createReservationCommand.setAllFlightBuy(false);
         createReservationCommand.setFlightInstanceInfo(listFlights);
         createReservationCommand.setCustomerInfo(c);
         createReservationCommand.setIdReservation(-1);
         createReservationCommand.setIdUser(request.getIdUser());
-        EventData eventData = new EventData(sagaId, UserValidate.CREATE_RESERVATION_AIRLINE, new ArrayList<>(), createReservationCommand);
+        EventData eventData = new EventData(sagaId, UserValidate.CREATE_RESERVATION_AIRLINE, new ArrayList<>(), createReservationCommand, 1);
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventData));
         return true;
     }

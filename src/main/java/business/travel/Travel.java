@@ -2,7 +2,10 @@ package business.travel;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Version;
 import lombok.Getter;
@@ -47,6 +51,14 @@ public class Travel {
     private SagaPhases statusSaga;
     @Column(nullable = false, name = "saga_id")
     private String sagaId;
+    @Column(nullable = false, name = "transaction_active")
+    private int transactionActive;
+    @OneToMany(
+        mappedBy = "travel",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<TravelHistoryCommits> historyCommits;
     @Version
     private int version;
 
@@ -71,6 +83,7 @@ public class Travel {
         this.active = dto.isActive();
         this.statusSaga = dto.getSagaPhases();
         this.sagaId = dto.getSagaId();
+        this.transactionActive = dto.getTransactionActive();
     }
 
     public TravelDTO toDTO(){
@@ -90,6 +103,10 @@ public class Travel {
             .active(this.active)
             .sagaPhases(this.statusSaga)
             .sagaId(this.sagaId)
+            .transactionActive(this.transactionActive)
+            .history(this.historyCommits.stream()
+                .map(TravelHistoryCommits::toDTO)
+                .toList())
             .build();
     }
 }

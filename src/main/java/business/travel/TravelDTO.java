@@ -1,6 +1,7 @@
 package business.travel;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,5 +31,6 @@ public class TravelDTO {
     private LocalDateTime dateCreation;
     private SagaPhases sagaPhases;
     private String sagaId;
-
+    private int transactionActive;
+    private List<TravelHistoryDTO> history;
 }

@@ -1,7 +1,6 @@
 package controller;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,7 +13,9 @@ import org.apache.logging.log4j.Logger;
 
 import business.usecase.createbookinghotel.CreateBookingHotelUseCase;
 import business.usecase.createtravelreservationairline.CreateTravelAirlineReservationUseCase;
+import business.usecase.createtravelreservationbooking.ICreateTravelReservationBookingUseCase;
 import msa.commons.controller.agency.reservationairline.ReservationAirlineRequestDTO;
+import msa.commons.controller.agency.reservationbooking.CreateAirlineAndHotelReservationDTO;
 import msa.commons.controller.hotel.booking.CreateHotelBookingDTO;
 
 @Path("/travel")
@@ -25,7 +26,7 @@ public class TravelController {
     private static final Logger LOGGER = LogManager.getLogger(TravelController.class);
     private CreateTravelAirlineReservationUseCase createTravelAirlineReservationUseCase;
     private CreateBookingHotelUseCase createBookingHotelUseCase;
-
+    private ICreateTravelReservationBookingUseCase createTravelReservationBookingUseCase;
 
     @POST
     @Path("/reservation/airline")
@@ -51,6 +52,18 @@ public class TravelController {
         return Response.status(Response.Status.OK).entity("Peticion recibida").build();
     }
 
+    @POST
+    @Path("/reservation/hotel-airline")
+    public Response createHotelAirlineReservation(CreateAirlineAndHotelReservationDTO dto) {
+        LOGGER.info("Iniciada reserva hotel-aerolinea: {}", dto);
+        boolean result = createTravelReservationBookingUseCase.createTravelReservationBooking(dto);
+        if (!result) {
+            LOGGER.error("Error al crear la reserva de hotel");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al crear la reserva").build();
+        }
+        return Response.status(Response.Status.OK).entity("Peticion recibida").build();
+    }
+
 
     @EJB
     public void setCreateTravelAirlineReservationUseCase(CreateTravelAirlineReservationUseCase createTravelAirlineReservationUseCase) {
@@ -62,4 +75,8 @@ public class TravelController {
         this.createBookingHotelUseCase = createBookingHotelUseCase;
     }
 
+    @EJB
+    public void setCreateTravelReservationBookingUseCase(ICreateTravelReservationBookingUseCase createTravelReservationBookingUseCase) {
+        this.createTravelReservationBookingUseCase = createTravelReservationBookingUseCase;
+    }
 }
