@@ -19,7 +19,6 @@ import msa.commons.commands.hotelroom.model.RoomInfo;
 import msa.commons.controller.hotel.booking.CreateHotelBookingDTO;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
-import msa.commons.event.eventoperation.reservation.CreateReservation;
 import msa.commons.event.eventoperation.user.UserValidate;
 import msa.commons.saga.SagaPhases;
 
@@ -60,7 +59,7 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
         long travelId = this.travelService.createTravel(travelDTO);
 
         EventData eventData = new EventData(sagaId,
-                UserValidate.CREATE_RESERVATION_AIRLINE,
+                UserValidate.CREATE_RESERVATION_HOTEL,
                 Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
                 CreateHotelBookingCommand.builder()
                         .sagaId(sagaId)
@@ -78,7 +77,6 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
                         .travelUserId(Long.parseLong(dto.getUserId()))
                         .build(),
                 transActive);
-        eventData.setOperation(UserValidate.CREATE_RESERVATION_HOTEL);
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventData));
         return true;
     }

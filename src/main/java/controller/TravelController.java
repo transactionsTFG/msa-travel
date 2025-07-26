@@ -5,6 +5,7 @@ import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -13,12 +14,18 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import business.dto.UpdateHotelBookingDTO;
+import business.dto.UpdateReservationBookingDTO;
+import business.dto.UpdateReservationDTO;
 import business.usecase.createbookinghotel.CreateBookingHotelUseCase;
 import business.usecase.createtravelreservationairline.CreateTravelAirlineReservationUseCase;
 import business.usecase.createtravelreservationbooking.ICreateTravelReservationBookingUseCase;
 import business.usecase.removebooking.IRemoveBookingUseCase;
 import business.usecase.removereservationairline.IRemoveReservationUseCase;
 import business.usecase.removereservationbooking.IRemoveReservationBookingUseCase;
+import business.usecase.updatebooking.IUpdateBookingUseCase;
+import business.usecase.updatebookingreservation.IUpdateBookingReservationUseCase;
+import business.usecase.updatereservation.IUpdateReservationUseCase;
 import msa.commons.controller.agency.reservationairline.ReservationAirlineRequestDTO;
 import msa.commons.controller.agency.reservationbooking.CreateAirlineAndHotelReservationDTO;
 import msa.commons.controller.hotel.booking.CreateHotelBookingDTO;
@@ -32,6 +39,11 @@ public class TravelController {
     private CreateTravelAirlineReservationUseCase createTravelAirlineReservationUseCase;
     private CreateBookingHotelUseCase createBookingHotelUseCase;
     private ICreateTravelReservationBookingUseCase createTravelReservationBookingUseCase;
+
+    private IUpdateBookingReservationUseCase updateBookingReservationUseCase;
+    private IUpdateReservationUseCase updateReservationUseCase;
+    private IUpdateBookingUseCase updateBookingUseCase;
+
     private IRemoveReservationUseCase removeReservationUseCase;
     private IRemoveReservationBookingUseCase removeReservationBookingUseCase;
     private IRemoveBookingUseCase removeBookingUseCase;
@@ -68,6 +80,42 @@ public class TravelController {
         if (!result) {
             LOGGER.error("Error al crear la reserva de hotel");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al crear la reserva").build();
+        }
+        return Response.status(Response.Status.OK).entity("Peticion recibida").build();
+    }
+
+    @PUT
+    @Path("/reservation/airline")
+    public Response updateAirlineReservation(UpdateReservationDTO dto) {
+        LOGGER.info("Actualizando reserva aerolinea: {}", dto);
+        boolean result = updateReservationUseCase.updateReservation(dto);
+        if (!result) {
+            LOGGER.error("Error al actualizar la reserva de aerolinea");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al actualizar la reserva").build();
+        }
+        return Response.status(Response.Status.OK).entity("Peticion recibida").build();
+    }
+
+    @PUT
+    @Path("/reservation/hotel")
+    public Response updateHotelReservation(UpdateHotelBookingDTO dto) {
+        LOGGER.info("Actualizando reserva hotel: {}", dto);
+        boolean result = updateBookingUseCase.updateBooking(dto);
+        if (!result) {
+            LOGGER.error("Error al actualizar la reserva de hotel");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al actualizar la reserva").build();
+        }
+        return Response.status(Response.Status.OK).entity("Peticion recibida").build();
+    }
+
+    @PUT
+    @Path("/reservation/hotel-airline")
+    public Response updateHotelAirlineReservation(UpdateReservationBookingDTO dto) {
+        LOGGER.info("Actualizando reserva hotel-aerolinea: {}", dto);
+        boolean result = updateBookingReservationUseCase.updateBookingReservation(dto);
+        if (!result) {
+            LOGGER.error("Error al actualizar la reserva de hotel-aerolinea");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al actualizar la reserva").build();
         }
         return Response.status(Response.Status.OK).entity("Peticion recibida").build();
     }
@@ -136,5 +184,20 @@ public class TravelController {
     @EJB
     public void setRemoveBookingUseCase(IRemoveBookingUseCase removeBookingUseCase) {
         this.removeBookingUseCase = removeBookingUseCase;
+    }
+
+    @EJB
+    public void setUpdateBookingReservationUseCase(IUpdateBookingReservationUseCase updateBookingReservationUseCase) {
+        this.updateBookingReservationUseCase = updateBookingReservationUseCase;
+    }
+    
+    @EJB
+    public void setUpdateReservationUseCase(IUpdateReservationUseCase updateReservationUseCase) {
+        this.updateReservationUseCase = updateReservationUseCase;
+    }
+
+    @EJB
+    public void setUpdateBookingUseCase(IUpdateBookingUseCase updateBookingUseCase) {
+        this.updateBookingUseCase = updateBookingUseCase;
     }
 }
