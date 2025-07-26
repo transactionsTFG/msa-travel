@@ -113,4 +113,18 @@ public class TravelServiceImpl implements TravelService {
             .getSingleResult();
         return t.toDTO();
     }
+
+    @Override
+    public TravelDTO updateTransaction(TravelDTO travelDTO) {
+        Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
+        if (t == null) 
+            return null;
+
+        t.setTransactionActive(travelDTO.getTransactionActive());
+        t.setSagaId(travelDTO.getSagaId());
+        t.setStatusSaga(travelDTO.getSagaPhases());
+        t.setActive(travelDTO.isActive());
+        this.entityManager.merge(t);
+        return t.toDTO();
+    }
 }

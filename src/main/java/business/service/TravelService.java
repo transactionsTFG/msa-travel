@@ -9,6 +9,7 @@ public interface TravelService {
     long createTravel(TravelDTO travelDTO);
     TravelDTO getTravelById(long id);
     TravelDTO getTravelByIdsExternal(long idReservation, long idBooking);
+    TravelDTO updateTransaction(TravelDTO travelDTO);
     TravelDTO updateTravelCommit(TravelDTO travelDTO, Type type, String jsonCommand);
     TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type);
     TravelHistoryDTO getTravelHistoryBySagaId(String sagaId);
