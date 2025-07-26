@@ -43,7 +43,7 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public TravelDTO updateTravelCommit(TravelDTO travelDTO, Type type, String jsonCommand) {
+    public TravelDTO updateTransactionCommit(TravelDTO travelDTO, Type type, String jsonCommand) {
         Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
         if (t == null) 
             return null;
@@ -58,7 +58,8 @@ public class TravelServiceImpl implements TravelService {
         t.setPassengerCounter(travelDTO.getPassengerCounter());
         t.setTransactionActive(t.getTransactionActive() - 1);
         if (t.getTransactionActive() == 0) {
-            t.setStatus("COMPLETADO");
+            t.setStatus(travelDTO.getStatus());
+            t.setActive(travelDTO.isActive());
             t.setStatusSaga(SagaPhases.COMPLETED);
         }
         TravelHistoryCommits history = this.entityManager.find(TravelHistoryCommits.class, travelDTO.getSagaId(), LockModeType.OPTIMISTIC);
@@ -115,7 +116,7 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public TravelDTO updateTransaction(TravelDTO travelDTO) {
+    public TravelDTO initTransaction(TravelDTO travelDTO) {
         Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
         if (t == null) 
             return null;
@@ -124,7 +125,16 @@ public class TravelServiceImpl implements TravelService {
         t.setSagaId(travelDTO.getSagaId());
         t.setStatusSaga(travelDTO.getSagaPhases());
         t.setActive(travelDTO.isActive());
+        TravelHistoryCommits history = new TravelHistoryCommits();
+        history.setTravel(t);
+        history.setSagaId(t.getSagaId());
+        history.setRollbackAirline(false);
+        history.setRollbackHotel(false);
+        this.entityManager.persist(history);
         this.entityManager.merge(t);
         return t.toDTO();
     }
+
+
+
 }

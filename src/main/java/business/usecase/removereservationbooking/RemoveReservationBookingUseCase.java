@@ -66,7 +66,7 @@ public class RemoveReservationBookingUseCase implements IRemoveReservationBookin
         travel.setTransactionActive(transactionActive);
         travel.setSagaId(sagaId);
         travel.setSagaPhases(SagaPhases.STARTED);
-        this.travelService.updateTransaction(travel);
+        this.travelService.initTransaction(travel);
         this.eventHandlerRegistry.getHandler(EventId.REMOVE_RESERVATION_TRAVEL).handleCommand(this.gson.toJson(eventDataHotel));
         this.eventHandlerRegistry.getHandler(EventId.REMOVE_RESERVATION_TRAVEL).handleCommand(this.gson.toJson(eventDataAirline));
         return true;

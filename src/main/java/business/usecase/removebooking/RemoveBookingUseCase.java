@@ -47,7 +47,7 @@ public class RemoveBookingUseCase implements IRemoveBookingUseCase {
         travel.setTransactionActive(transactionActive);
         travel.setSagaId(sagaId);
         travel.setSagaPhases(SagaPhases.STARTED);
-        this.travelService.updateTransaction(travel);
+        this.travelService.initTransaction(travel);
         this.eventHandlerRegistry.getHandler(EventId.REMOVE_RESERVATION_TRAVEL).handleCommand(this.gson.toJson(eventData));
         return true;
     }
