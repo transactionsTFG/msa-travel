@@ -83,12 +83,12 @@ public class TravelServiceImpl implements TravelService {
         
         if (type == Type.HOTEL) {
             history.setRollbackHotel(true);
-            t.setHotelReservationID(-1L);
+            t.setHotelReservationID(0L);
         }
 
         if (type == Type.AIRLINE) {
             history.setRollbackAirline(true);
-            t.setFlightReservationID(-1L);
+            t.setFlightReservationID(0L);
         }
 
         t.setTransactionActive(0);
@@ -103,5 +103,14 @@ public class TravelServiceImpl implements TravelService {
         if (th == null)
             return null;
         return th.toDTO();
+    }
+
+    @Override
+    public TravelDTO getTravelByIdsExternal(long idReservation, long idBooking) {
+        Travel t = this.entityManager.createNamedQuery("Travel.findByFlightAndHotelReservation", Travel.class)
+            .setParameter("flightReservationID", idReservation)
+            .setParameter("hotelReservationID", idBooking)
+            .getSingleResult();
+        return t.toDTO();
     }
 }

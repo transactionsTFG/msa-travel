@@ -56,6 +56,7 @@ public class CreateReservationTravel extends BaseHandler {
             travelDTO.setUserId(c.getIdUser());
             travelDTO.setFlightCost(totalCost);
             travelDTO.setPassengerCounter(passengers);
+            travelDTO.setFlightReservationID(c.getIdReservation());
             this.travelService.updateTravelCommit(travelDTO, Type.AIRLINE, this.gson.toJson(c));
         } else {
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
@@ -71,8 +72,7 @@ public class CreateReservationTravel extends BaseHandler {
         if (travelDTO != null && travelDTO.getSagaId().equals(e.getSagaId()) && travelDTO.getSagaPhases().equals(SagaPhases.STARTED)) {
             double totalCost = c.getRoomsInfo().stream().mapToDouble(f -> f.getDailyPrice() * c.getNumberOfNights()).sum();
             travelDTO.setHotelCost(totalCost);
-            travelDTO.setHotelReservationID(Long.parseLong(c.getRoomsInfo().get(0).getRoomId()));
-            travelDTO.setPassengerCounter(c.getPeopleNumber());
+            travelDTO.setHotelReservationID(c.getBookingId());
             this.travelService.updateTravelCommit(travelDTO, Type.HOTEL, this.gson.toJson(c));
         } else {
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);

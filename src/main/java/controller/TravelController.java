@@ -1,7 +1,9 @@
 package controller;
 
 import javax.ejb.EJB;
+import javax.websocket.server.PathParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,6 +16,9 @@ import org.apache.logging.log4j.Logger;
 import business.usecase.createbookinghotel.CreateBookingHotelUseCase;
 import business.usecase.createtravelreservationairline.CreateTravelAirlineReservationUseCase;
 import business.usecase.createtravelreservationbooking.ICreateTravelReservationBookingUseCase;
+import business.usecase.removebooking.IRemoveBookingUseCase;
+import business.usecase.removereservationairline.IRemoveReservationUseCase;
+import business.usecase.removereservationbooking.IRemoveReservationBookingUseCase;
 import msa.commons.controller.agency.reservationairline.ReservationAirlineRequestDTO;
 import msa.commons.controller.agency.reservationbooking.CreateAirlineAndHotelReservationDTO;
 import msa.commons.controller.hotel.booking.CreateHotelBookingDTO;
@@ -27,6 +32,9 @@ public class TravelController {
     private CreateTravelAirlineReservationUseCase createTravelAirlineReservationUseCase;
     private CreateBookingHotelUseCase createBookingHotelUseCase;
     private ICreateTravelReservationBookingUseCase createTravelReservationBookingUseCase;
+    private IRemoveReservationUseCase removeReservationUseCase;
+    private IRemoveReservationBookingUseCase removeReservationBookingUseCase;
+    private IRemoveBookingUseCase removeBookingUseCase;
 
     @POST
     @Path("/reservation/airline")
@@ -64,6 +72,41 @@ public class TravelController {
         return Response.status(Response.Status.OK).entity("Peticion recibida").build();
     }
 
+    @DELETE
+    @Path("/reservation/airline/{reservationId}")
+    public Response removeAirlineReservation(@PathParam("reservationId") long reservationId) {
+        LOGGER.info("Eliminando reserva aerolinea: {}", reservationId);
+        boolean result = removeReservationUseCase.removeReservation(reservationId);
+        if (!result) {
+            LOGGER.error("Error al eliminar la reserva de aerolinea");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al eliminar la reserva").build();
+        }
+        return Response.status(Response.Status.OK).entity("Peticion recibida").build();
+    }
+
+    @DELETE
+    @Path("/reservation/hotel/{bookingId}")
+    public Response removeHotelReservation(@PathParam("bookingId") long bookingId) {
+        LOGGER.info("Eliminando reserva hotel: {}", bookingId);
+        boolean result = removeBookingUseCase.removeBooking(bookingId);
+        if (!result) {
+            LOGGER.error("Error al eliminar la reserva de hotel");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al eliminar la reserva").build();
+        }
+        return Response.status(Response.Status.OK).entity("Peticion recibida").build();
+    }
+
+    @DELETE
+    @Path("/reservation/hotel-airline/{reservationId}/{bookingId}")
+    public Response removeHotelAirlineReservation(@PathParam("reservationId") long reservationId, @PathParam("bookingId") long bookingId) {
+        LOGGER.info("Eliminando reserva hotel-aerolinea: {}", reservationId);
+        boolean result = removeReservationBookingUseCase.removeReservationBooking(reservationId, bookingId);
+        if (!result) {
+            LOGGER.error("Error al eliminar la reserva de hotel-aerolinea");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al eliminar la reserva").build();
+        }
+        return Response.status(Response.Status.OK).entity("Peticion recibida").build();
+    }
 
     @EJB
     public void setCreateTravelAirlineReservationUseCase(CreateTravelAirlineReservationUseCase createTravelAirlineReservationUseCase) {
@@ -78,5 +121,20 @@ public class TravelController {
     @EJB
     public void setCreateTravelReservationBookingUseCase(ICreateTravelReservationBookingUseCase createTravelReservationBookingUseCase) {
         this.createTravelReservationBookingUseCase = createTravelReservationBookingUseCase;
+    }
+
+    @EJB
+    public void setRemoveReservationUseCase(IRemoveReservationUseCase removeReservationUseCase) {
+        this.removeReservationUseCase = removeReservationUseCase;
+    }
+
+    @EJB
+    public void setRemoveReservationBookingUseCase(IRemoveReservationBookingUseCase removeReservationBookingUseCase) {
+        this.removeReservationBookingUseCase = removeReservationBookingUseCase;
+    }
+
+    @EJB
+    public void setRemoveBookingUseCase(IRemoveBookingUseCase removeBookingUseCase) {
+        this.removeBookingUseCase = removeBookingUseCase;
     }
 }

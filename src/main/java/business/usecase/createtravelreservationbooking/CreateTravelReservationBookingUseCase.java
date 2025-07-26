@@ -104,7 +104,7 @@ public class CreateTravelReservationBookingUseCase implements ICreateTravelReser
         eventDataHotelCommand.setTransactionActive(transactionActive);
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventDataReservationCommand));
         this.eventHandlerRegistry.getHandler(EventId.VALIDATE_USER).handleCommand(this.gson.toJson(eventDataHotelCommand));
-        return false;
+        return true;
     }
 
     @Inject
