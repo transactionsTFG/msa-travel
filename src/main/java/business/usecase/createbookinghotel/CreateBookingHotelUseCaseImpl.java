@@ -65,7 +65,7 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
                 CreateHotelBookingCommand.builder()
                         .sagaId(sagaId)
                         .idTravelAgency(travelId)
-                        .userId(Long.parseLong(dto.getUserId()))
+                        .userId(-1L)
                         .startDate(dto.getStartDate())
                         .endDate(dto.getEndDate())
                         .numberOfNights(dto.getNumberOfNights())
@@ -74,7 +74,7 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
                         .customerDNI(dto.getCustomerDNI())
                         .roomsInfo(dto.getRoomsInfo())
                         .customerInfo(customerInfo)
-                        .travelUserId(-1L)
+                        .travelUserId(Long.parseLong(dto.getUserId()))
                         .build(),
                 transActive);
         eventData.setOperation(UserValidate.CREATE_RESERVATION_HOTEL);
