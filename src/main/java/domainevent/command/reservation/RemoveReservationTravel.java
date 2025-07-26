@@ -18,7 +18,6 @@ import msa.commons.commands.removereservation.RemoveBookingCommand;
 import msa.commons.commands.removereservation.RemoveReservationCommand;
 import msa.commons.event.EventData;
 import msa.commons.event.EventId;
-import msa.commons.event.eventoperation.reservation.CreateReservation;
 import msa.commons.event.eventoperation.reservation.DeleteReservation;
 import msa.commons.event.type.Type;
 import msa.commons.saga.SagaPhases;
@@ -89,11 +88,11 @@ public class RemoveReservationTravel extends BaseHandler {
                 EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), airlineCommand);
                 hotelEvent.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
                 this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
-                this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
+                this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, hotelEvent);
             }
             this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
             e.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_HOTEL_ROLLBACK);
-            this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
+            this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, e);
             return;
         }
 
@@ -108,16 +107,16 @@ public class RemoveReservationTravel extends BaseHandler {
                     EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), airlineCommand);
                     hotelEvent.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
                     this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
-                    this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
+                    this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, hotelEvent);
                 });
 
-            e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
+            e.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_HOTEL_ROLLBACK);
             this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
-            this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
+            this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, e);
         } else {
-            e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);
+            e.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_HOTEL_ROLLBACK);
             this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
-            this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
+            this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, e);
         }
     }   
 
@@ -136,11 +135,11 @@ public class RemoveReservationTravel extends BaseHandler {
                 EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), hotelCommand);
                 hotelEvent.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_HOTEL_ROLLBACK);
                 this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
-                this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
+                this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, hotelEvent);
             }
             this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
             e.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
-            this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
+            this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, e);
             return;
         }
 
@@ -155,16 +154,16 @@ public class RemoveReservationTravel extends BaseHandler {
                     EventData hotelEvent = new EventData(e.getSagaId(), new ArrayList<>(), hotelCommand);
                     hotelEvent.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_HOTEL_ROLLBACK);
                     this.travelService.updateTravelRollback(travelDTO, Type.HOTEL);
-                    this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, hotelEvent);
+                    this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, hotelEvent);
                 });
 
             e.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
             this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
-            this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
+            this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, e);
         } else {
             e.setOperation(DeleteReservation.DELETE_RESERVATION_ONLY_AIRLINE_ROLLBACK);
             this.travelService.updateTravelRollback(travelDTO, Type.AIRLINE);
-            this.jmsEventPublisher.publish(EventId.CREATE_RESERVATION_TRAVEL, e);
+            this.jmsEventPublisher.publish(EventId.REMOVE_RESERVATION_TRAVEL, e);
         }
     }
 

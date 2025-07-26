@@ -13,4 +13,5 @@ public interface TravelService {
     TravelDTO updateTransactionCommit(TravelDTO travelDTO, Type type, String jsonCommand);
     TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type);
     TravelHistoryDTO getTravelHistoryBySagaId(String sagaId);
+    void forceEndTransaction(TravelDTO travelDTO);
 }
