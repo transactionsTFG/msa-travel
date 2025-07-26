@@ -74,6 +74,7 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
                         .customerDNI(dto.getCustomerDNI())
                         .roomsInfo(dto.getRoomsInfo())
                         .customerInfo(customerInfo)
+                        .bookingId(dto.getBookingId())
                         .travelUserId(Long.parseLong(dto.getUserId()))
                         .build(),
                 transActive);
