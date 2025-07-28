@@ -79,6 +79,7 @@ public class CreateReservationTravel extends BaseHandler {
             travelDTO.setActive(true);
             travelDTO.setStatus("COMPLETADO");
             travelDTO.setHotelReservationID(c.getBookingId());
+            travelDTO.setUserId(c.getTravelUserId());
             this.travelService.updateTransactionCommit(travelDTO, Type.HOTEL, this.gson.toJson(c));
         } else {
             e.setOperation(CreateReservation.CREATE_RESERVATION_ONLY_HOTEL_ROLLBACK);

@@ -56,6 +56,7 @@ public class TravelServiceImpl implements TravelService {
         t.setDate(travelDTO.getDate());
         t.setReturnDate(travelDTO.getReturnDate());
         t.setCost(travelDTO.getFlightCost() + travelDTO.getHotelCost());
+        t.setCost(travelDTO.getCost());
         t.setHotelReservationID(travelDTO.getHotelReservationID());
         t.setPassengerCounter(travelDTO.getPassengerCounter());
         t.setTransactionActive(t.getTransactionActive() - 1);
