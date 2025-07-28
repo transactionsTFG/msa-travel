@@ -52,6 +52,7 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
             repeatIds.add(id);
             RoomInfo room = new RoomInfo();
             room.setRoomId(id + "");
+            roomsInfo.add(room);
         }
 
         final byte transActive = 1;
