@@ -41,7 +41,10 @@ public class CreateTravelReservationBookingUseCase implements ICreateTravelReser
             throw new RuntimeException("Info reservation is null");
 
         CustomerInfo customerInfo = new CustomerInfo();
-        customerInfo.setDni(reservation.getDni());
+        customerInfo.setDni(reservation.getCustomer().getDni());
+        customerInfo.setName(reservation.getCustomer().getName());
+        customerInfo.setEmail(reservation.getCustomer().getEmail());
+        customerInfo.setPhone(reservation.getCustomer().getPhone());
         List<IdFlightInstanceInfo> listFlights = new ArrayList<>();
         for (FlightInstanceSeatsDTO f : info.getFlightInstances()) {
             if(f.getIdFlightInstance() <= 0 || f.getNumberSeats() <= 0)
