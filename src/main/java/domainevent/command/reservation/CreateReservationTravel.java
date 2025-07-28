@@ -56,6 +56,8 @@ public class CreateReservationTravel extends BaseHandler {
             travelDTO.setUserId(c.getIdUser());
             travelDTO.setFlightCost(totalCost);
             travelDTO.setPassengerCounter(passengers);
+            travelDTO.setStatus("COMPLETADO");
+            travelDTO.setActive(true);
             travelDTO.setFlightReservationID(c.getIdReservation());
             this.travelService.updateTransactionCommit(travelDTO, Type.AIRLINE, this.gson.toJson(c));
         } else {
@@ -67,11 +69,13 @@ public class CreateReservationTravel extends BaseHandler {
     private void handleCreateReservationHotelCommit(final String json) {
         EventData e = EventData.fromJson(json, CreateHotelBookingCommand.class);
         CreateHotelBookingCommand c = (CreateHotelBookingCommand) e.getData();
-        LOGGER.info("Commit Create Reservation only Arline: {}", e.getSagaId());
+        LOGGER.info("Commit Create Reservation only Hotel: {}", e.getSagaId());
         TravelDTO travelDTO = this.travelService.getTravelById(c.getIdTravelAgency());
         if (travelDTO != null && travelDTO.getSagaId().equals(e.getSagaId()) && travelDTO.getSagaPhases().equals(SagaPhases.STARTED)) {
             double totalCost = c.getRoomsInfo().stream().mapToDouble(f -> f.getDailyPrice() * c.getNumberOfNights()).sum();
             travelDTO.setHotelCost(totalCost);
+            travelDTO.setActive(true);
+            travelDTO.setStatus("COMPLETADO");
             travelDTO.setHotelReservationID(c.getBookingId());
             this.travelService.updateTransactionCommit(travelDTO, Type.HOTEL, this.gson.toJson(c));
         } else {
@@ -131,7 +135,7 @@ public class CreateReservationTravel extends BaseHandler {
     private void handleCreateReservationHotelRollback(final String json) {
         EventData e = EventData.fromJson(json, CreateHotelBookingCommand.class);
         CreateHotelBookingCommand c = (CreateHotelBookingCommand) e.getData();
-        LOGGER.info("Rollback Create Reservation only Arline: {}", e.getSagaId());
+        LOGGER.info("Rollback Create Reservation only Hotel: {}", e.getSagaId());
         TravelHistoryDTO travelHistoryDTO = this.travelService.getTravelHistoryBySagaId(c.getSagaId());
         if (travelHistoryDTO.isRollbackHotel()) 
             return;
