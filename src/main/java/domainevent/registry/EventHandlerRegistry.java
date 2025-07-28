@@ -9,6 +9,7 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 
 import business.qualifier.CreateReservationTravelQualifier;
+import business.qualifier.RemoveReservationTravelQualifier;
 import business.qualifier.UpdateReservationTravelQualifier;
 import business.qualifier.ValidateUserReservationTravelQualifier;
 import domainevent.command.handler.CommandHandler;
@@ -20,12 +21,15 @@ public class EventHandlerRegistry {
     private Map<EventId, CommandHandler> handlers = new EnumMap<>(EventId.class);
     private CommandHandler validateUserReservationTravel;
     private CommandHandler createReservationTravel;
+    private CommandHandler removeReservationTravel;
     private CommandHandler updateReservationTravel;
+
 
     @PostConstruct
     public void init() {
         this.handlers.put(EventId.VALIDATE_USER, this.validateUserReservationTravel);
         this.handlers.put(EventId.CREATE_RESERVATION_TRAVEL, this.createReservationTravel);
+        this.handlers.put(EventId.REMOVE_RESERVATION_TRAVEL, this.removeReservationTravel);
         this.handlers.put(EventId.UPDATE_RESERVATION_TRAVEL, this.updateReservationTravel);
     }
 
@@ -48,5 +52,9 @@ public class EventHandlerRegistry {
         this.updateReservationTravel = updateReservationTravel;
     }
 
+   @Inject
+    public void setRemoveReservationTravel(@RemoveReservationTravelQualifier CommandHandler removeReservationTravel) {
+        this.removeReservationTravel = removeReservationTravel;
+    }
 
 }
