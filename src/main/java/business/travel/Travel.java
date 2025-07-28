@@ -38,8 +38,10 @@ public class Travel {
 	private long id;
 	@Column(nullable = false)
 	private Long userId;
-	private String date;
-	private String returnDate;
+    @Column(nullable = true)
+	private LocalDateTime date;
+	@Column(nullable = true)
+    private LocalDateTime returnDate;
     @Column(nullable = false)
 	private int passengerCounter;
     @Column(nullable = false)

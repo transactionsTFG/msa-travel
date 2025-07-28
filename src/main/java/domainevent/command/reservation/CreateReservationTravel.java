@@ -58,6 +58,8 @@ public class CreateReservationTravel extends BaseHandler {
             travelDTO.setPassengerCounter(passengers);
             travelDTO.setStatus("COMPLETADO");
             travelDTO.setActive(true);
+            travelDTO.setDate(c.getMinDateTime());
+            travelDTO.setReturnDate(c.getMaxDateTime());
             travelDTO.setFlightReservationID(c.getIdReservation());
             this.travelService.updateTransactionCommit(travelDTO, Type.AIRLINE, this.gson.toJson(c));
         } else {

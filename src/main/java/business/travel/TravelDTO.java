@@ -18,8 +18,8 @@ import msa.commons.saga.SagaPhases;
 public class TravelDTO {
     private long id;
     private long userId;
-    private String date;
-    private String returnDate;
+    private LocalDateTime date;
+    private LocalDateTime returnDate;
     private int passengerCounter;
     private double cost;
     private String status;
