@@ -138,7 +138,7 @@ public class CreateReservationTravel extends BaseHandler {
         EventData e = EventData.fromJson(json, CreateHotelBookingCommand.class);
         CreateHotelBookingCommand c = (CreateHotelBookingCommand) e.getData();
         LOGGER.info("Rollback Create Reservation only Hotel: {}", e.getSagaId());
-        TravelHistoryDTO travelHistoryDTO = this.travelService.getTravelHistoryBySagaId(c.getSagaId());
+        TravelHistoryDTO travelHistoryDTO = this.travelService.getTravelHistoryBySagaId(e.getSagaId());
         if (travelHistoryDTO.isRollbackHotel()) 
             return;
 

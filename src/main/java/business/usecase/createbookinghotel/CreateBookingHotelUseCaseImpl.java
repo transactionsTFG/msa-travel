@@ -1,7 +1,9 @@
 package business.usecase.createbookinghotel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,21 +34,24 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
     public boolean createHotelBooking(CreateHotelBookingDTO dto) {
         final String sagaId = UUID.randomUUID().toString();
         CustomerInfo customerInfo = new CustomerInfo();
-        customerInfo.setDni(dto.getCustomerDNI());
         customerInfo.setName(dto.getCustomer().getName());
         customerInfo.setEmail(dto.getCustomer().getEmail());
         customerInfo.setDni(dto.getCustomer().getDni());
-        Set<String> repeatIds = new HashSet<>();
-        for (RoomInfo roomInfo : dto.getRoomsInfo()) {
+        customerInfo.setPhone(dto.getCustomer().getPhone());
+        Set<Long> repeatIds = new HashSet<>();
+        List<RoomInfo> roomsInfo = new ArrayList<>();
+        for (Long roomInfo : dto.getRoomsIds()) {
             long id = 0;
-            try {  
-                id = Long.parseLong(roomInfo.getRoomId());
+            try {
+                id = roomInfo;
             } catch (NumberFormatException e) {
-                throw new RuntimeException("Invalid room ID: " + roomInfo.getRoomId());
+                throw new RuntimeException("Invalid room ID: " + roomInfo);
             }
-            if (roomInfo.getRoomId() == null || id <= 0 || repeatIds.contains(roomInfo.getRoomId())) 
-                throw new RuntimeException("Room ID " + roomInfo.getRoomId() + " is repeated in the request"); 
-            repeatIds.add(roomInfo.getRoomId());
+            if (id <= 0 || repeatIds.contains(id))
+                throw new RuntimeException("Room ID " + id + " is repeated in the request");
+            repeatIds.add(id);
+            RoomInfo room = new RoomInfo();
+            room.setRoomId(id + "");
         }
 
         final byte transActive = 1;
@@ -62,18 +67,15 @@ public class CreateBookingHotelUseCaseImpl implements CreateBookingHotelUseCase 
                 UserValidate.CREATE_RESERVATION_HOTEL,
                 Arrays.asList(EventId.ROLLBACK_CREATE_HOTEL_BOOKING),
                 CreateHotelBookingCommand.builder()
-                        .sagaId(sagaId)
                         .idTravelAgency(travelId)
-                        .userId(-1L)
                         .startDate(dto.getStartDate())
                         .endDate(dto.getEndDate())
                         .numberOfNights(dto.getNumberOfNights())
                         .withBreakfast(dto.getWithBreakfast())
                         .peopleNumber(dto.getPeopleNumber())
-                        .customerDNI(dto.getCustomerDNI())
-                        .roomsInfo(dto.getRoomsInfo())
+                        .roomsInfo(roomsInfo)
                         .customerInfo(customerInfo)
-                        .bookingId(dto.getBookingId())
+                        .bookingId(-1L)
                         .travelUserId(Long.parseLong(dto.getUserId()))
                         .build(),
                 transActive);

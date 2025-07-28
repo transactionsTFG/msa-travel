@@ -82,14 +82,11 @@ public class CreateTravelReservationBookingUseCase implements ICreateTravelReser
                 .build();
 
           CreateHotelBookingCommand createHotelBookingCommand = CreateHotelBookingCommand.builder()
-                .sagaId(sagaId)
-                .userId(-1L)
                 .startDate(info.getStartDate())
                 .endDate(info.getEndDate())
                 .numberOfNights(info.getNumberOfNights())
                 .withBreakfast(info.getWithBreakfast())
                 .peopleNumber(info.getPeopleNumber())
-                .customerDNI(reservation.getDni())
                 .roomsInfo(roomsInfo)
                 .customerInfo(customerInfo)
                 .travelUserId(reservation.getIdUser())
