@@ -40,7 +40,6 @@ public class UpdateBookingUseCaseImpl implements IUpdateBookingUseCase {
             repeatIds.add(roomInfo);
             RoomInfo i = new RoomInfo();
             i.setRoomId(String.valueOf(roomInfo));
-            i.setDailyPrice((int)(Math.random() * 101));
             roomsInfo.add(i);
         }
 
