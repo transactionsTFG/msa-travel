@@ -55,15 +55,18 @@ public class UpdateReservationTravel extends BaseHandler {
         TravelDTO travel = this.travelService.getTravelById(command.getIdTravel());
         if (travel == null)
             return;
-        this.travelService.updateTransactionCommit(travel, Type.AIRLINE, json);
+        this.travelService.updateTransactionCommit(travel, Type.AIRLINE, this.gson.toJson(command));
         TravelDTO updatedTravel = this.travelService.getTravelById(command.getIdTravel());
         if (updatedTravel.getTransactionActive() == 0) {
             TravelHistoryDTO history = this.travelService.getTravelHistoryBySagaId(updatedTravel.getSagaId());
             UpdateReservationCommand updateCommandAirline = this.gson.fromJson(history.getJsonCommandAirline(), UpdateReservationCommand.class);
-            updatedTravel.setFlightCost(10000L); // Example cost, replace with actual 'updateCommandAirline'
+            updatedTravel.setFlightCost(updateCommandAirline.getTotalPrice());
+            updatedTravel.setDate(updateCommandAirline.getMinDateTime());
+            updatedTravel.setReturnDate(updateCommandAirline.getMaxDateTime());
+            updatedTravel.setPassengerCounter(updateCommandAirline.getNumberOfSeats());
             if (history.getJsonCommandHotel() != null) {
                 UpdateHotelBookingCommand updateCommandHotel = this.gson.fromJson(history.getJsonCommandHotel(), UpdateHotelBookingCommand.class);
-                updatedTravel.setHotelCost(5000L); // Example cost, replace with actual 'updateCommandHotel'
+                updatedTravel.setHotelCost(updateCommandHotel.getTotalPrice());
             }
             this.travelService.forceEndTransaction(updatedTravel);
         }
@@ -75,15 +78,18 @@ public class UpdateReservationTravel extends BaseHandler {
         TravelDTO travel = this.travelService.getTravelById(command.getIdTravel());
         if (travel == null)
             return;
-        this.travelService.updateTransactionCommit(travel, Type.HOTEL, json);
+        this.travelService.updateTransactionCommit(travel, Type.HOTEL, this.gson.toJson(command));
         TravelDTO updatedTravel = this.travelService.getTravelById(command.getIdTravel());
         if (updatedTravel.getTransactionActive() == 0) {
             TravelHistoryDTO history = this.travelService.getTravelHistoryBySagaId(updatedTravel.getSagaId());
             UpdateHotelBookingCommand updateCommandBooking = this.gson.fromJson(history.getJsonCommandHotel(), UpdateHotelBookingCommand.class);
-            updatedTravel.setHotelCost(10000L); // Example cost, replace with actual 'updateCommandBooking'
+            updatedTravel.setHotelCost(updateCommandBooking.getTotalPrice());
             if (history.getJsonCommandAirline() != null) {
                 UpdateReservationCommand updateCommandAirline = this.gson.fromJson(history.getJsonCommandAirline(), UpdateReservationCommand.class);
-                updatedTravel.setFlightCost(5000L); // Example cost, replace with actual 'updateCommandAirline'
+                updatedTravel.setFlightCost(updateCommandAirline.getTotalPrice());
+                updatedTravel.setDate(updateCommandAirline.getMinDateTime());
+                updatedTravel.setReturnDate(updateCommandAirline.getMaxDateTime());
+                updatedTravel.setPassengerCounter(updateCommandAirline.getNumberOfSeats());
             }
             this.travelService.forceEndTransaction(updatedTravel);
         }

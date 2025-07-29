@@ -141,10 +141,13 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public void forceEndTransaction(TravelDTO travelDTO) {
         Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
-        if (t == null || t.getTransactionActive() == 0) 
+        if (t == null) 
             return;
         
         t.setFlightCost(travelDTO.getFlightCost());
+        t.setHotelCost(travelDTO.getHotelCost());
+        t.setDate(travelDTO.getDate());
+        t.setReturnDate(travelDTO.getReturnDate());
         t.setCost(travelDTO.getFlightCost() + travelDTO.getHotelCost());
         t.setPassengerCounter(travelDTO.getPassengerCounter());
         this.entityManager.merge(t);
