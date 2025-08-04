@@ -7,7 +7,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import com.google.gson.Gson;
-import com.tangosol.coherence.transaction.internal.operation.RemoveOperation;
 
 import business.service.TravelService;
 import business.travel.TravelDTO;
