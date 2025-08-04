@@ -1,8 +1,11 @@
 package controller;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -17,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 import business.dto.UpdateHotelBookingDTO;
 import business.dto.UpdateReservationBookingDTO;
 import business.dto.UpdateReservationDTO;
+import business.service.TravelService;
+import business.travel.TravelDTO;
 import business.usecase.createbookinghotel.CreateBookingHotelUseCase;
 import business.usecase.createtravelreservationairline.CreateTravelAirlineReservationUseCase;
 import business.usecase.createtravelreservationbooking.ICreateTravelReservationBookingUseCase;
@@ -30,7 +35,7 @@ import msa.commons.controller.agency.reservationairline.ReservationAirlineReques
 import msa.commons.controller.agency.reservationbooking.CreateAirlineAndHotelReservationDTO;
 import msa.commons.controller.hotel.booking.CreateHotelBookingDTO;
 
-@Path("/travel")
+@Path("/travel/reservation")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TravelController {
@@ -48,8 +53,40 @@ public class TravelController {
     private IRemoveReservationBookingUseCase removeReservationBookingUseCase;
     private IRemoveBookingUseCase removeBookingUseCase;
 
+    private TravelService travelService;
+
+    @GET
+    @Path("/{travelId}")
+    public Response getTravelById(@PathParam("travelId") long travelId) {
+        LOGGER.info("Obteniendo viaje por ID: {}", travelId);
+        TravelDTO travel = travelService.getTravelById(travelId);
+        if (travel != null) 
+            return Response.ok(travel).build();
+        else 
+            return Response.status(Response.Status.NOT_FOUND).entity("Viaje no encontrado").build();
+    }
+
+    @GET
+    @Path("/user/{userId}")
+    public Response getTravelsByUserId(@PathParam("userId") long userId) {
+        LOGGER.info("Obteniendo viajes por ID de usuario: {}", userId);
+        List<TravelDTO> travels = travelService.getTravelsByUserId(userId);
+        return Response.ok(travels).build();
+    }
+
+    @GET
+    @Path("/hotel-airline/{hotelId}/{airlineId}")
+    public Response getTravelByHotelAndAirline(@PathParam("hotelId") long hotelId, @PathParam("airlineId") long airlineId) {
+        LOGGER.info("Obteniendo viaje por ID de hotel y aerolinea: {}, {}", hotelId, airlineId);
+        TravelDTO travel = travelService.getTravelByIdsExternal(airlineId, hotelId);
+        if (travel != null) 
+            return Response.ok(travel).build();
+        else 
+            return Response.status(Response.Status.NOT_FOUND).entity("Viaje no encontrado").build();
+    }
+
     @POST
-    @Path("/reservation/airline")
+    @Path("/airline")
     public Response createAirlineReservation(ReservationAirlineRequestDTO dto) {
         LOGGER.info("Iniciada reserva aerolinea: {}", dto);
         boolean result = createTravelAirlineReservationUseCase.createTravelAirlineReservation(dto);
@@ -61,7 +98,7 @@ public class TravelController {
     }
 
     @POST
-    @Path("/reservation/hotel")
+    @Path("/hotel")
     public Response createHotelReservation(CreateHotelBookingDTO dto) {
         LOGGER.info("Iniciada reserva hotel: {}", dto);
         boolean result = createBookingHotelUseCase.createHotelBooking(dto);
@@ -73,7 +110,7 @@ public class TravelController {
     }
 
     @POST
-    @Path("/reservation/hotel-airline")
+    @Path("/hotel-airline")
     public Response createHotelAirlineReservation(CreateAirlineAndHotelReservationDTO dto) {
         LOGGER.info("Iniciada reserva hotel-aerolinea: {}", dto);
         boolean result = createTravelReservationBookingUseCase.createTravelReservationBooking(dto);
@@ -85,7 +122,7 @@ public class TravelController {
     }
 
     @PUT
-    @Path("/reservation/airline")
+    @Path("/airline")
     public Response updateAirlineReservation(UpdateReservationDTO dto) {
         LOGGER.info("Actualizando reserva aerolinea: {}", dto);
         boolean result = updateReservationUseCase.updateReservation(dto);
@@ -97,7 +134,7 @@ public class TravelController {
     }
 
     @PUT
-    @Path("/reservation/hotel")
+    @Path("/hotel")
     public Response updateHotelReservation(UpdateHotelBookingDTO dto) {
         LOGGER.info("Actualizando reserva hotel: {}", dto);
         boolean result = updateBookingUseCase.updateBooking(dto);
@@ -109,7 +146,7 @@ public class TravelController {
     }
 
     @PUT
-    @Path("/reservation/hotel-airline")
+    @Path("/hotel-airline")
     public Response updateHotelAirlineReservation(UpdateReservationBookingDTO dto) {
         LOGGER.info("Actualizando reserva hotel-aerolinea: {}", dto);
         boolean result = updateBookingReservationUseCase.updateBookingReservation(dto);
@@ -121,7 +158,7 @@ public class TravelController {
     }
 
     @DELETE
-    @Path("/reservation/airline/{reservationId}")
+    @Path("/airline/{reservationId}")
     public Response removeAirlineReservation(@PathParam("reservationId") long reservationId) {
         LOGGER.info("Eliminando reserva aerolinea: {}", reservationId);
         boolean result = removeReservationUseCase.removeReservation(reservationId);
@@ -133,7 +170,7 @@ public class TravelController {
     }
 
     @DELETE
-    @Path("/reservation/hotel/{bookingId}")
+    @Path("/hotel/{bookingId}")
     public Response removeHotelReservation(@PathParam("bookingId") long bookingId) {
         LOGGER.info("Eliminando reserva hotel: {}", bookingId);
         boolean result = removeBookingUseCase.removeBooking(bookingId);
@@ -145,7 +182,7 @@ public class TravelController {
     }
 
     @DELETE
-    @Path("/reservation/hotel-airline/{reservationId}/{bookingId}")
+    @Path("/hotel-airline/{reservationId}/{bookingId}")
     public Response removeHotelAirlineReservation(@PathParam("reservationId") long reservationId, @PathParam("bookingId") long bookingId) {
         LOGGER.info("Eliminando reserva hotel-aerolinea: {}", reservationId);
         boolean result = removeReservationBookingUseCase.removeReservationBooking(reservationId, bookingId);
@@ -199,5 +236,10 @@ public class TravelController {
     @EJB
     public void setUpdateBookingUseCase(IUpdateBookingUseCase updateBookingUseCase) {
         this.updateBookingUseCase = updateBookingUseCase;
+    }
+
+    @EJB
+    public void setTravelService(TravelService travelService) {
+        this.travelService = travelService;
     }
 }

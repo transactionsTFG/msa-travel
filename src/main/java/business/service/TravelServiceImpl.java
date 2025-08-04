@@ -1,5 +1,7 @@
 package business.service;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -119,6 +121,15 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
+    public List<TravelDTO> getTravelsByUserId(long userId) {
+        List<Travel> travels = this.entityManager.createNamedQuery("Travel.findByUserId", Travel.class)
+            .setParameter("userId", userId)
+            .getResultList();
+        return travels.stream().map(Travel::toDTO).toList();
+    }
+
+
+    @Override
     public TravelDTO initTransaction(TravelDTO travelDTO) {
         Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
         if (t == null) 
@@ -152,7 +163,5 @@ public class TravelServiceImpl implements TravelService {
         t.setPassengerCounter(travelDTO.getPassengerCounter());
         this.entityManager.merge(t);
     }
-
-
 
 }

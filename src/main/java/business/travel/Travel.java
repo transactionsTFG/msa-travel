@@ -31,6 +31,10 @@ import msa.commons.saga.SagaPhases;
     name = "Travel.findByFlightAndHotelReservation",
     query = "SELECT t FROM Travel t WHERE t.flightReservationID = :flightReservationID AND t.hotelReservationID = :hotelReservationID"
 )
+@NamedQuery(
+    name = "Travel.findByIdUser",
+    query = "SELECT t FROM Travel t WHERE t.userId = :userId"
+)
 public class Travel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
