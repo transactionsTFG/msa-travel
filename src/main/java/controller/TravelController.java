@@ -1,8 +1,10 @@
 package controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -17,6 +19,8 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import business.dto.FlightHotelDTO;
+import business.dto.TravelInfo;
 import business.dto.UpdateHotelBookingDTO;
 import business.dto.UpdateReservationBookingDTO;
 import business.dto.UpdateReservationDTO;
@@ -79,6 +83,17 @@ public class TravelController {
     public Response getTravelByHotelAndAirline(@PathParam("hotelId") long hotelId, @PathParam("airlineId") long airlineId) {
         LOGGER.info("Obteniendo viaje por ID de hotel y aerolinea: {}, {}", hotelId, airlineId);
         TravelDTO travel = travelService.getTravelByIdsExternal(airlineId, hotelId);
+        if (travel != null) 
+            return Response.ok(travel).build();
+        else 
+            return Response.status(Response.Status.NOT_FOUND).entity("Viaje no encontrado").build();
+    }
+
+    @GET
+    @Path("/info")
+    public Response getTravelInfo(@BeanParam TravelInfo travelInfo) {
+        LOGGER.info("Obteniendo información del viaje: {}", travelInfo);
+        Map<String, FlightHotelDTO> travel = travelService.getFlightAndHotelByParams(travelInfo);
         if (travel != null) 
             return Response.ok(travel).build();
         else 

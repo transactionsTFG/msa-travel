@@ -1,12 +1,21 @@
 package business.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 
+import business.dto.FlightHotelDTO;
+import business.dto.TravelInfo;
+import business.external.flight.FlightApiClient;
+import business.external.flight.FlightDTO;
+import business.external.flight.FlightParamsDTO;
+import business.external.room.RoomApiClient;
+import business.external.room.RoomInfoDTO;
 import business.travel.Travel;
 import business.travel.TravelDTO;
 import business.travel.TravelHistoryCommits;
@@ -18,6 +27,8 @@ import msa.commons.event.type.Type;
 @Stateless
 public class TravelServiceImpl implements TravelService {
     private EntityManager entityManager;
+    private FlightApiClient flightApiClient;
+    private RoomApiClient roomApiClient;
 
     @Override
     public long createTravel(TravelDTO travelDTO) {
@@ -32,6 +43,30 @@ public class TravelServiceImpl implements TravelService {
         entityManager.flush();
         return t.getId(); 
     } 
+
+    @Override
+    public Map<String, FlightHotelDTO> getFlightAndHotelByParams(TravelInfo travelInfo) {
+        List<RoomInfoDTO> roomList = this.roomApiClient.getRoomByParams(travelInfo.getCountryDestination(), travelInfo.getHotelName()); 
+        List<FlightDTO> flightList = this.flightApiClient.getFlightsByParams(new FlightParamsDTO(
+            travelInfo.getCountryOrigin(),
+            travelInfo.getCountryDestination(),
+            travelInfo.getCityOrigin(),
+            travelInfo.getCityDestination(),
+            travelInfo.getDateOrigin()
+        )); 
+
+        Map<String, List<RoomInfoDTO>> hotelsByCountry = roomList.stream()
+            .collect(Collectors.groupingBy(RoomInfoDTO::getCountry));
+
+       Map<String, List<FlightDTO>> flightsByCountry = flightList.stream()
+                                                                    .collect(Collectors.groupingBy(FlightDTO::getCountryDestination));
+
+       return flightsByCountry.entrySet().stream()
+                                .filter(entry -> hotelsByCountry.containsKey(entry.getKey())) 
+                                .collect(
+                                    Collectors.toMap(Map.Entry::getKey, entry -> new FlightHotelDTO(entry.getValue(), hotelsByCountry.get(entry.getKey())))
+                                );                                             
+    }
     
     @Inject
     public void setEntityManager(EntityManager entityManager) {
@@ -163,5 +198,17 @@ public class TravelServiceImpl implements TravelService {
         t.setPassengerCounter(travelDTO.getPassengerCounter());
         this.entityManager.merge(t);
     }
+
+    @Inject
+    public void setFlightApiClient(FlightApiClient flightApiClient) {
+        this.flightApiClient = flightApiClient;
+    }
+
+    @Inject
+    public void setRoomApiClient(RoomApiClient roomApiClient) {
+        this.roomApiClient = roomApiClient;
+    }
+
+    
 
 }
