@@ -30,7 +30,7 @@ public class UpdateReservationUseCaseImpl implements IUpdateReservationUseCase {
     @Override
     public boolean updateReservation(UpdateReservationDTO up) {
         TravelDTO travel = travelService.getTravelById(up.getIdTravel());
-        if (travel == null || !travel.isActive() || travel.getSagaPhases().equals(SagaPhases.STARTED) || travelService.getTravelByIdsExternal(up.getIdReservation(), 0) == null)
+        if (travel == null || !travel.isActive() || travel.getSagaPhases().equals(SagaPhases.STARTED) || travel.getFlightReservationID() != up.getIdReservation() || travel.getHotelReservationID() != 0)
             throw new RuntimeException("Travel with ID " + up.getIdTravel() + " not found");
 
         List<IdUpdateFlightInstanceInfo> flightInstanceSeats = new ArrayList<>();
