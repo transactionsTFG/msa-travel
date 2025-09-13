@@ -1,5 +1,5 @@
 package business.usecase.removebooking;
 
 public interface IRemoveBookingUseCase {
-    boolean removeBooking(long bookingId);
+    boolean removeBooking(long travelId, long bookingId);
 }

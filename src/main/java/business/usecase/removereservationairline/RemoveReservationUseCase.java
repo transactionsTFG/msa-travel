@@ -24,10 +24,10 @@ public class RemoveReservationUseCase implements IRemoveReservationUseCase {
     private Gson gson;
     
     @Override
-    public boolean removeReservation(long reservationId) {
-        TravelDTO travel = this.travelService.getTravelByIdsExternal(reservationId, 0L);
-        if (travel == null) 
-            throw new RuntimeException("No travel found with reservation ID: " + reservationId);
+    public boolean removeReservation(long travelId, long reservationId) {
+        TravelDTO travel = this.travelService.getTravelById(travelId);
+        if (travel == null || reservationId != travel.getFlightReservationID() || travel.getHotelReservationID() != 0) 
+            throw new RuntimeException("No travel found with ID: " + travelId);
         
         if(!travel.isActive() || travel.getSagaPhases().equals(SagaPhases.STARTED)) 
             throw new RuntimeException("Cannot remove reservation, travel is not completed: " + travel.getSagaPhases());

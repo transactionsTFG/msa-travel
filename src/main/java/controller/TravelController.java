@@ -173,10 +173,10 @@ public class TravelController {
     }
 
     @DELETE
-    @Path("/airline/{reservationId}")
-    public Response removeAirlineReservation(@PathParam("reservationId") long reservationId) {
+    @Path("/airline/{travelId}/{reservationId}")
+    public Response removeAirlineReservation(@PathParam("travelId") long travelId, @PathParam("reservationId") long reservationId) {
         LOGGER.info("Eliminando reserva aerolinea: {}", reservationId);
-        boolean result = removeReservationUseCase.removeReservation(reservationId);
+        boolean result = removeReservationUseCase.removeReservation(travelId, reservationId);
         if (!result) {
             LOGGER.error("Error al eliminar la reserva de aerolinea");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al eliminar la reserva").build();
@@ -185,10 +185,10 @@ public class TravelController {
     }
 
     @DELETE
-    @Path("/hotel/{bookingId}")
-    public Response removeHotelReservation(@PathParam("bookingId") long bookingId) {
+    @Path("/hotel/{travelId}/{bookingId}")
+    public Response removeHotelReservation(@PathParam("travelId") long travelId, @PathParam("bookingId") long bookingId) {
         LOGGER.info("Eliminando reserva hotel: {}", bookingId);
-        boolean result = removeBookingUseCase.removeBooking(bookingId);
+        boolean result = removeBookingUseCase.removeBooking(travelId, bookingId);
         if (!result) {
             LOGGER.error("Error al eliminar la reserva de hotel");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al eliminar la reserva").build();
@@ -197,10 +197,10 @@ public class TravelController {
     }
 
     @DELETE
-    @Path("/hotel-airline/{reservationId}/{bookingId}")
-    public Response removeHotelAirlineReservation(@PathParam("reservationId") long reservationId, @PathParam("bookingId") long bookingId) {
+    @Path("/hotel-airline/{travelId}/{reservationId}/{bookingId}")
+    public Response removeHotelAirlineReservation(@PathParam("travelId") long travelId, @PathParam("reservationId") long reservationId, @PathParam("bookingId") long bookingId) {
         LOGGER.info("Eliminando reserva hotel-aerolinea: {}", reservationId);
-        boolean result = removeReservationBookingUseCase.removeReservationBooking(reservationId, bookingId);
+        boolean result = removeReservationBookingUseCase.removeReservationBooking(travelId, reservationId, bookingId);
         if (!result) {
             LOGGER.error("Error al eliminar la reserva de hotel-aerolinea");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error al eliminar la reserva").build();

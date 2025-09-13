@@ -26,10 +26,10 @@ public class RemoveReservationBookingUseCase implements IRemoveReservationBookin
 
 
     @Override
-    public boolean removeReservationBooking(long reservationId, long bookingId) {
-        TravelDTO travel = this.travelService.getTravelByIdsExternal(reservationId, bookingId);
-        if (travel == null) 
-            throw new RuntimeException("No travel found with reservation ID: " + reservationId + " and booking ID: " + bookingId);
+    public boolean removeReservationBooking(long travelId, long reservationId, long bookingId) {
+        TravelDTO travel = this.travelService.getTravelById(travelId);
+        if (travel == null || reservationId != travel.getFlightReservationID() || bookingId != travel.getHotelReservationID())
+            throw new RuntimeException("No travel found with ID: " + travelId);
         
         if(!travel.isActive() || travel.getSagaPhases().equals(SagaPhases.STARTED)) 
             throw new RuntimeException("Cannot remove reservation, travel is not completed: " + travel.getSagaPhases());
