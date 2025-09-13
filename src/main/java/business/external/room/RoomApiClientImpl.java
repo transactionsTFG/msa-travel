@@ -16,7 +16,7 @@ public class RoomApiClientImpl implements RoomApiClient{
 
     @Override
     public List<RoomInfoDTO> getRoomByParams(String country, String hotelName) {
-        Response r = this.client.target(PATH)
+        Response r = this.client.target(PATH + "params")
                 .queryParam("country", country)
                 .queryParam("hotelName", hotelName)
                 .request()

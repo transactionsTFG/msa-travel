@@ -16,7 +16,7 @@ public class FlightApiClientImpl implements FlightApiClient {
 
     @Override
     public List<FlightDTO> getFlightsByParams(FlightParamsDTO flightParamsDTO) {
-        Response r = this.client.target(PATH)
+        Response r = this.client.target(PATH + "/flight-info")
                 .queryParam("countryOrigin", flightParamsDTO.getCountryOrigin())
                 .queryParam("countryDestination", flightParamsDTO.getCountryDestination())
                 .queryParam("cityOrigin", flightParamsDTO.getCityOrigin())
