@@ -56,7 +56,7 @@ public class TravelServiceImpl implements TravelService {
         )); 
 
         Map<String, List<RoomInfoDTO>> hotelsByCountry = roomList.stream()
-            .collect(Collectors.groupingBy(RoomInfoDTO::getCountry));
+            .collect(Collectors.groupingBy(RoomInfoDTO::getCountryName));
 
        Map<String, List<FlightDTO>> flightsByCountry = flightList.stream()
                                                                     .collect(Collectors.groupingBy(FlightDTO::getCountryDestination));
