@@ -10,6 +10,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FlightHotelDTO {
-    private List<FlightDTO> flights;
-    private List<RoomInfoDTO> hotels;
+    private List<FlightDTO> listFlight;
+    private List<RoomInfoDTO> listHotel;
 }
