@@ -76,6 +76,9 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public TravelDTO getTravelById(long id) {
         Travel t = this.entityManager.find(Travel.class, id, LockModeType.OPTIMISTIC);
+        if (t == null) {
+            return null;
+        }
         return t.toDTO();
     }
 
@@ -148,11 +151,11 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public TravelDTO getTravelByIdsExternal(long idReservation, long idBooking) {
-        Travel t = this.entityManager.createNamedQuery("Travel.findByFlightAndHotelReservation", Travel.class)
+        List<Travel> travels = this.entityManager.createNamedQuery("Travel.findByFlightAndHotelReservation", Travel.class)
             .setParameter("flightReservationID", idReservation)
             .setParameter("hotelReservationID", idBooking)
-            .getSingleResult();
-        return t.toDTO();
+            .getResultList();
+        return travels.isEmpty() ? null : travels.get(0).toDTO();
     }
 
     @Override
