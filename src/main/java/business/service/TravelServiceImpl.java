@@ -157,7 +157,7 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public List<TravelDTO> getTravelsByUserId(long userId) {
-        List<Travel> travels = this.entityManager.createNamedQuery("Travel.findByUserId", Travel.class)
+        List<Travel> travels = this.entityManager.createNamedQuery("Travel.findByIdUser", Travel.class)
             .setParameter("userId", userId)
             .getResultList();
         return travels.stream().map(Travel::toDTO).toList();
