@@ -118,7 +118,7 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type) {
+    public TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type, boolean forceInactive) {
         Travel t = this.entityManager.find(Travel.class, travelDTO.getId(), LockModeType.OPTIMISTIC);
         if (t == null) 
             return null;
@@ -134,6 +134,10 @@ public class TravelServiceImpl implements TravelService {
             history.setRollbackAirline(true);
             t.setFlightReservationID(0L);
         }
+
+        if (forceInactive) 
+            t.setActive(false);
+    
 
         t.setTransactionActive(0);
         t.setStatus("CANCELADO");

@@ -17,7 +17,7 @@ public interface TravelService {
     TravelDTO getTravelByIdsExternal(long idReservation, long idBooking);
     TravelDTO initTransaction(TravelDTO travelDTO);
     TravelDTO updateTransactionCommit(TravelDTO travelDTO, Type type, String jsonCommand);
-    TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type);
+    TravelDTO updateTravelRollback(TravelDTO travelDTO, Type type, boolean forceActive);
     TravelHistoryDTO getTravelHistoryBySagaId(String sagaId);
     void forceEndTransaction(TravelDTO travelDTO);
 }

@@ -33,7 +33,7 @@ import msa.commons.saga.SagaPhases;
 )
 @NamedQuery(
     name = "Travel.findByIdUser",
-    query = "SELECT t FROM Travel t WHERE t.userId = :userId AND t.active = true"
+    query = "SELECT t FROM Travel t WHERE t.userId = :userId"
 )
 public class Travel {
     @Id
