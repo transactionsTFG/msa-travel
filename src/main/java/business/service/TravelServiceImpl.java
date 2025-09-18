@@ -127,12 +127,12 @@ public class TravelServiceImpl implements TravelService {
         
         if (type == Type.HOTEL) {
             history.setRollbackHotel(true);
-            t.setHotelReservationID(0L);
+            //t.setHotelReservationID(0L);
         }
 
         if (type == Type.AIRLINE) {
             history.setRollbackAirline(true);
-            t.setFlightReservationID(0L);
+            //t.setFlightReservationID(0L);
         }
 
         if (forceInactive) 
